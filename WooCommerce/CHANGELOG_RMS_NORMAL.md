@@ -1,5 +1,14 @@
 # Change log for WooCommerce Razer Merchant Services Normal Plugin
 
+## v3.1.0 - May 30, 2024
+
+- Block Based Checkout Support
+- Rebranded to Fiuu
+
+**Bug Fix:**
+
+- Improper usage of WooCommerce Order Object.
+
 ## v3.0.2 - July 14, 2020
 
 **Bug Fix:**
