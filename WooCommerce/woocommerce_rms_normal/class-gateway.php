@@ -37,8 +37,12 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway {
     add_action( 'woocommerce_receipt_molpay', array( &$this, 'receipt_page' ) );
     
     if (isset($_GET['molpay_redirect']) && $_GET['molpay_redirect']) {
-        do_action ( "woocommerce_receipt_molpay", $_GET['order-pay'] );
-        exit();
+        $order_id = "";
+        if (isset($_GET['key']) && $_GET['key']) {
+            $order_id = wc_get_order_id_by_order_key( $_GET['key'] );
+            do_action ( "woocommerce_receipt_molpay", $order_id );
+            exit();
+        }
     }
     $_GET['molpay_redirect'] = "";
 
