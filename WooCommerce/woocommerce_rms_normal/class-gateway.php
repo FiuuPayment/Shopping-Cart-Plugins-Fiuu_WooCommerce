@@ -31,7 +31,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
 
         // Define hostname based on account_type
         $this->url = ($this->get_option('account_type') == '1') ? "https://pay.fiuu.com/" : "https://sandbox.merchant.razer.com/";
-        $this->inquiry_url = ($this->get_option('account_type') == '1') ? "https://api.merchant.razer.com/" : "https://sandbox.merchant.razer.com/";
+        $this->inquiry_url = ($this->get_option('account_type') == '1') ? "https://api.fiuu.com/" : "https://sandbox.merchant.razer.com/";
 
         // Actions.
         add_action('valid_molpay_request_returnurl', array(&$this, 'check_molpay_response_returnurl'));
@@ -192,19 +192,19 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
             'merchant_id' => array(
                 'title' => __('Merchant ID', 'wcmolpay'),
                 'type' => 'text',
-                'description' => __('Please enter your Fiuu Merchant ID.', 'wcmolpay') . ' ' . sprintf(__('You can to get this information in: %sFiuu Account%s.', 'wcmolpay'), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>'),
+                'description' => __('Please enter your Fiuu Merchant ID.', 'wcmolpay') . ' ' . sprintf(__('You can to get this information in: %sFiuu Account%s.', 'wcmolpay'), '<a href="https://portal.fiuu.com/" target="_blank">', '</a>'),
                 'default' => ''
             ),
             'verify_key' => array(
                 'title' => __('Verify Key', 'wcmolpay'),
                 'type' => 'text',
-                'description' => __('Please enter your Fiuu Verify Key.', 'wcmolpay') . ' ' . sprintf(__('You can to get this information in: %sFiuu Account%s.', 'wcmolpay'), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>'),
+                'description' => __('Please enter your Fiuu Verify Key.', 'wcmolpay') . ' ' . sprintf(__('You can to get this information in: %sFiuu Account%s.', 'wcmolpay'), '<a href="https://portal.fiuu.com/" target="_blank">', '</a>'),
                 'default' => ''
             ),
             'secret_key' => array(
                 'title' => __('Secret Key', 'wcmolpay'),
                 'type' => 'text',
-                'description' => __('Please enter your Fiuu Secret Key.', 'wcmolpay') . ' ' . sprintf(__('You can to get this information in: %sFiuu Account%s.', 'wcmolpay'), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>'),
+                'description' => __('Please enter your Fiuu Secret Key.', 'wcmolpay') . ' ' . sprintf(__('You can to get this information in: %sFiuu Account%s.', 'wcmolpay'), '<a href="https://portal.fiuu.com/" target="_blank">', '</a>'),
                 'default' => ''
             ),
             'account_type' => array(
