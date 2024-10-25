@@ -28,7 +28,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway {
     $this->recurring = $this->settings['recurring'];
     
     // Define hostname based on account_type
-    $this->url = ($this->get_option('account_type')=='1') ? "https://pay.merchant.razer.com/" : "https://sandbox.merchant.razer.com/" ;
+    $this->url = ($this->get_option('account_type')=='1') ? "https://pay.fiuu.com/" : "https://sandbox.merchant.razer.com/" ;
     $this->inquiry_url = ($this->get_option('account_type')=='1') ? "https://api.merchant.razer.com/" : "https://sandbox.merchant.razer.com/" ;
     
     // Actions.
