@@ -3,10 +3,10 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway {
   
   // Constructor method
   public function __construct() {
-    global $woocommerce;
+    global $woocommerce, $post;
 
     $this->id                 = 'wcmolpay';
-    $this->icon = plugins_url( 'images/Fiuu_Logo-01.png', __FILE__ );
+    $this->icon = plugins_url( 'images/Fiuu_Logo-03.png', __FILE__ );
     $this->has_fields = false;
     $this->method_title       = __('Fiuu', 'wcmolpay');
     $this->method_description = __('Proceed payment via Fiuu Normal Integration Plugin', 'wcmolpay');
@@ -25,6 +25,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway {
     $this->verify_key = $this->settings['verify_key'];
     $this->secret_key = $this->settings['secret_key'];
     $this->account_type = $this->settings['account_type'];
+    $this->recurring = $this->settings['recurring'];
     
     // Define hostname based on account_type
     $this->url = ($this->get_option('account_type')=='1') ? "https://pay.merchant.razer.com/" : "https://sandbox.merchant.razer.com/" ;
@@ -104,6 +105,8 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway {
         'grabpay'           => 'GrabPay eWallet',
         'rpp_duitnowqr'     => 'DuitNow QR',
         'paynow'            => 'PayNow QR',
+        'cimb-ebpg'  => 'CIMB Bank (Installment)',
+        'pbb-cybs'   => 'Public Bank (Installment)',
     );
   }
   
@@ -208,6 +211,14 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway {
                       '1'  => __('PRODUCTION', 'wcmolpay' ),
                       '2' => __( 'SANDBOX', 'wcmolpay' )
                       )
+              ),
+              'recurring' => array(//recurring part
+                'title' => __( 'Subscription', 'wcmolpay'),
+                'type' => 'checkbox',
+                'label' => __( 'Enable recurring payment'),
+                'description' => __( 'This controls the recurring payment', 'wcmolpay' ),
+                'default' => 'no',
+                'desc_tip' => true
               ),
           );
       }
@@ -324,8 +335,32 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway {
           $status = $_POST['status'];
           if( !$verifyresult )
               $status = "-1";
+     
+          $extraP = isset($_POST['extraP']) ? $_POST['extraP'] : '';
 
-          $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
+          if (isset($_POST['extraP']) && !empty($_POST['extraP']) && ($this->recurring == 'yes')) {
+            $extraP_arr = json_decode(stripslashes($_POST['extraP']),1);
+            $token = isset($extraP_arr['token']) ? $extraP_arr['token'] : '';
+            if(!empty($token)){
+                $response = $this->get_token_details($token);
+                
+                // Decode the JSON response into an associative array
+                $data = json_decode($response, true);
+
+                $billing_name = $data['billing_name'];
+                $billing_email = $data['billing_email'];
+                $billing_mobile = $data['billing_mobile'];
+                $customer_id = $this->create_woocommerce_customer($billing_name,$billing_email,$billing_mobile);
+                $this->create_woocommerce_order($customer_id, $_POST['orderid'], $_POST['amount'], $billing_name, '', $billing_email);
+
+            }
+          }
+            $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
+
+          if(empty($WCOrderId)){
+            wp_die( "Order not found" );
+          }
+        
           $order = new WC_Order( $WCOrderId );
           $referer = "<br>Referer: ReturnURL";
           $getStatus =  $order->get_status();
@@ -334,7 +369,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway {
                   $referer .= " (Inquiry)";
                   $status = $this->inquiry_status( $_POST['tranID'], $_POST['amount'], $_POST['domain']);
               }
-              $this->update_Cart_by_Status($WCOrderId, $status, $_POST['tranID'], $referer, $_POST['channel']);
+              $this->update_Cart_by_Status($WCOrderId, $status, $_POST['tranID'], $referer, $_POST['channel'], $extraP);
               if (in_array($status, array("00","22"))) {
                   wp_redirect($order->get_checkout_order_received_url());
               } else {
@@ -359,11 +394,34 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway {
           if ( !$verifyresult )
               $status = "-1";
 
-          $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
-          $referer = "<br>Referer: NotificationURL";
-          $this->update_Cart_by_Status($WCOrderId, $status, $_POST['tranID'], $referer, $_POST['channel']);
-          $this->acknowledgeResponse($_POST);
-      }
+		    $extraP = isset($_POST['extraP']) ? $_POST['extraP'] : '';
+
+			if (isset($_POST['extraP']) && !empty($_POST['extraP']) && ($this->recurring == 'yes')) {
+				$extraP_arr = json_decode(stripslashes($_POST['extraP']),1);
+				$token = isset($extraP_arr['token']) ? $extraP_arr['token'] : '';
+                if(!empty($token)){
+                    $response = $this->get_token_details($token);
+                    
+                    // Decode the JSON response into an associative array
+                    $data = json_decode($response, true);
+
+                    $billing_name = $data['billing_name'];
+                    $billing_email = $data['billing_email'];
+                    $billing_mobile = $data['billing_mobile'];
+                    $customer_id = $this->create_woocommerce_customer($billing_name,$billing_email,$billing_mobile);
+                    $this->create_woocommerce_order($customer_id, $_POST['orderid'], $_POST['amount'], $billing_name, '', $billing_email);
+
+				} else {
+					wp_die( "Order not found" );
+				}
+			}
+				  $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
+		  
+				  $referer = "<br>Referer: NotificationURL";
+				  $this->update_Cart_by_Status($WCOrderId, $status, $_POST['tranID'], $referer, $_POST['channel'], $extraP);
+				  $this->acknowledgeResponse($_POST);
+      		  
+	  }
 
       /**
        * This part is handle callback response
@@ -376,12 +434,155 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway {
           $status = $_POST['status'];
           if ( !$verifyresult )
               $status = "-1";
-          
-          $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
+
+		    $extraP = isset($_POST['extraP']) ? $_POST['extraP'] : '';
+
+			if (isset($_POST['extraP']) && !empty($_POST['extraP']) && ($this->recurring == 'yes')) {
+				$extraP_arr = json_decode(stripslashes($_POST['extraP']),1);
+				$token = isset($extraP_arr['token']) ? $extraP_arr['token'] : '';
+                if(!empty($token)){
+                    $response = $this->get_token_details($token);
+                    
+                    // Decode the JSON response into an associative array
+                    $data = json_decode($response, true);
+
+                    $billing_name = $data['billing_name'];
+                    $billing_email = $data['billing_email'];
+                    $billing_mobile = $data['billing_mobile'];
+                    $customer_id = $this->create_woocommerce_customer($billing_name,$billing_email,$billing_mobile);
+                    $this->create_woocommerce_order($customer_id, $_POST['orderid'], $_POST['amount'], $billing_name, '', $billing_email);
+
+				} else {
+					wp_die( "Order not found" );
+				}
+			}
+				  $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
+                  
           $referer = "<br>Referer: CallbackURL";
-          $this->update_Cart_by_Status($WCOrderId, $status, $_POST['tranID'], $referer, $_POST['channel']);
+          $this->update_Cart_by_Status($WCOrderId, $status, $_POST['tranID'], $referer, $_POST['channel'], $extraP );
           $this->acknowledgeResponse($_POST);
       }
+
+        /**
+         * Get token details
+         * 
+         * @param string $customer_id
+         * @param int $order_id
+         * @param double $amount
+         * @param string $first_name
+         * @param string $last_name
+         * @param string $billing_email
+         */
+
+         function create_woocommerce_order($customer_id, $order_id, $amount, $first_name, $last_name, $billing_email) {
+            $order = new WC_Order();
+            $order->set_customer_id($customer_id);
+            $order->set_id($order_id);
+            $order->set_total($amount);
+            $order->set_billing_first_name($first_name); // Use the full name as first name
+            $order->set_billing_last_name($last_name); // Optionally set last name to an empty string
+            $order->set_billing_email($billing_email);
+            $order->save(); // Save the order
+        }
+
+        /**
+         * Get token details
+         * 
+         * @param string $token The token
+         * @return string $response
+         */
+
+        function get_token_details($token) {
+
+            //api
+            $requery_url = $this->url."RMS/API/token/index.php";
+            $post_data =
+                [
+                "action" => 'GET_TOKEN_DETAILS',
+                "token" => $token,
+                "custID" => '',
+                "merchantID" => $this->merchant_id,
+                "signature" => ''
+                ];
+            $verifyKey = $this->verify_key;
+            $sign = hash_hmac('SHA256', $post_data['action'].$post_data['merchantID'].$post_data['token'], $verifyKey);
+            $post_data['signature'] = $sign;
+            $params = http_build_query($post_data);
+            
+            $ch = curl_init($requery_url);
+            curl_setopt($ch, CURLOPT_URL, $requery_url);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+
+            curl_setopt($ch, CURLOPT_CERTINFO, 1);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+
+            curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);  // TRUE to force the use of a new connection instead of a cached one.
+            curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);  // TRUE to force the use of a new connection instead of a cached one.
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+
+            curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+
+            $response = curl_exec($ch);
+            
+            if (curl_errno($ch)) {
+                echo $curl_errno_messages = curl_errno($ch)." - ".curl_error($ch)."\n";
+            }
+            if (curl_errno($ch)) {
+                curl_close($ch);
+                return 0;
+            }
+            curl_close($ch);
+
+            return $response;
+        }
+
+        /**
+         * Create a WooCommerce customer account
+         * 
+         * @param string $billing_name Full name of the customer
+         * @param string $billing_email Email of the customer
+         * @param string $billing_phone Phone number of the customer
+         * @return int|WP_Error Customer user ID on success, or WP_Error on failure
+         */
+        function create_woocommerce_customer($billing_name, $billing_email, $billing_phone) {
+            // Check if the user already exists by email
+            if (email_exists($billing_email)) {
+                return get_user_by('email', $billing_email)->ID; // Return existing user ID
+            }
+
+            // Randomly generate a password
+            $password = wp_generate_password();
+
+            // Create the new user
+            $user_id = wp_create_user($billing_email, $password, $billing_email);
+
+            // Check if the user was created successfully
+            if (is_wp_error($user_id)) {
+                return $user_id; // Return the WP_Error object
+            }
+
+            // Set WooCommerce customer role
+            $user = new WP_User($user_id);
+            $user->set_role('customer');
+
+            // Update user meta with additional billing details
+            update_user_meta($user_id, 'billing_full_name', $billing_name); // Store full name
+            update_user_meta($user_id, 'billing_email', $billing_email);
+            update_user_meta($user_id, 'billing_phone', $billing_phone);
+
+            // Optionally send new user notification
+            wp_new_user_notification($user_id, null, 'user');
+
+            return $user_id;
+        }
+
 
       /**
        * Adds error message when not configured the merchant_id.
@@ -478,7 +679,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway {
        * @param int $tranID
        * @param string $referer
        */
-      public function update_Cart_by_Status($orderid, $MOLPay_status, $tranID, $referer, $channel) {
+      public function update_Cart_by_Status($orderid, $MOLPay_status, $tranID, $referer, $channel, $extraP='') {
           global $woocommerce;
 
           $order = new WC_Order( $orderid );
@@ -520,7 +721,9 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway {
               'agrobank' => 'fpx_agrobank',
               'muamalat' => 'fpx_bmmb',
               'TNG-EWALLET' => 'TNG_EWALLET',
-              'RPP_DuitNowQR' => 'RPP_DuitNowQR'
+              'RPP_DuitNowQR' => 'RPP_DuitNowQR',
+              'CIMB_eBPG' => 'cimb-ebpg',
+              'PBB-CYBS' => 'pbb-cybs',
           );
 
           if (isset($channel_mappings[$channel])) {
@@ -529,7 +732,6 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway {
 
           $getStatus = $order->get_status();
           if(!in_array($getStatus,array('processing','completed'))) {
-              $order->add_order_note('Fiuu Payment Status: '.$M_status.'<br>Transaction ID: ' . $tranID . $referer);
               if ($MOLPay_status == "00") {
                   $order->payment_complete();
               } else {
@@ -540,7 +742,19 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway {
                   $order->set_payment_method_title($paytitle);
                   $order->save();
               }
-          }
+            //recurring part
+            // Store the extraP data as order metadata
+            $extraP_arr = json_decode(stripslashes($_POST['extraP']),1);
+            $order->add_order_note('Fiuu Payment Status: '.$M_status.'<br>Transaction ID: ' . $tranID . $referer . ' extraP: '. json_encode($extraP_arr));
+
+            if (!empty($extraP)) {
+                foreach ($extraP_arr as $key => $value) {
+                    $order->update_meta_data('_' . $key, $value);
+                }
+            }
+          } else {
+                wp_die( "Order completed" );
+            }
       }
 
       /**
@@ -553,7 +767,17 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway {
       public function get_WCOrderIdByOrderId($orderid) {
           switch($this->ordering_plugin) {
               case '1' : 
-                  $WCOrderId = wc_sequential_order_numbers()->find_order_by_order_number( $orderid );
+                $args = array(  
+                    'limit' =>1, 
+                    array(  
+                        'key' => '_order_number', 
+                        'value' => $orderid,  
+                        'compare' => '='
+                    )   
+                );  
+                $orders = wc_get_orders($args);  
+                $data = json_decode($orders[0], true);
+                $WCOrderId = $data['id'];
                   break;
               case '2' : 
                   $WCOrderId = wc_seq_order_number_pro()->find_order_by_order_number( $orderid );
