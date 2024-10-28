@@ -3,7 +3,7 @@
  * Fiuu WooCommerce Shopping Cart Plugin
  * 
  * @author Fiuu Technical Team <technical-sa@razer.com>
- * @version 3.1.0
+ * @version 3.2.4
  * @example For callback : http://shoppingcarturl/?wc-api=WC_Molpay_Gateway
  * @example For notification : http://shoppingcarturl/?wc-api=WC_Molpay_Gateway
  */
@@ -14,7 +14,7 @@
  * Description: WooCommerce Fiuu | The leading payment gateway in South East Asia Grow your business with Fiuu payment solutions & free features: Physical Payment at 7-Eleven, Seamless Checkout, Tokenization, Loyalty Program and more for WooCommerce
  * Author: Fiuu Tech Team
  * Author URI: https://merchant.razer.com/
- * Version: 3.1.0
+ * Version: 3.2.4
  * License: MIT
  * Text Domain: wcmolpay
  * Domain Path: /languages/
