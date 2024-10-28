@@ -22,7 +22,7 @@ Installations Guidance for Wordpress Plugin
 -----------------------------
 [ClassiPress Version	3.2.1](https://github.com/RazerMS/WordPress_WooCommerce_WP-eCommerce_ClassiPress/wiki/Installation-for-Classipress-Plugins)
 
-[WooCommerce](https://github.com/RazerMS/WordPress_WooCommerce_WP-eCommerce_ClassiPress/wiki/Installation-for-WooCommerce-Plugins)
+[WooCommerce](https://github.com/FiuuPayment/Shopping-Cart-Plugins-Fiuu_WooCommerce/wiki/Installation-for-WooCommerce-Plugins)
 
 
 Changelog
