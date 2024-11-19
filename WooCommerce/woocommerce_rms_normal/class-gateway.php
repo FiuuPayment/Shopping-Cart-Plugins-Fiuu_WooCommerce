@@ -28,6 +28,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
         $this->secret_key = $this->settings['secret_key'];
         $this->account_type = $this->settings['account_type'];
         $this->recurring = $this->settings['recurring'];
+		$this->extend_vcode = $this->settings['extend_vcode'];
 
         // Define hostname based on account_type
         $this->url = ($this->get_option('account_type') == '1') ? "https://pay.fiuu.com/" : "https://sandbox.merchant.razer.com/";
@@ -222,6 +223,14 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 'type' => 'checkbox',
                 'label' => __('Enable recurring payment'),
                 'description' => __('This controls the recurring payment', 'wcmolpay'),
+                'default' => 'no',
+                'desc_tip' => true
+            ),
+			    'extend_vcode' => array( //
+                'title' => __('Subscription', 'wcmolpay'),
+                'type' => 'checkbox',
+                'label' => __('Enable extended VCode'),
+                'description' => __('This controls the extended VCode', 'wcmolpay'),
                 'default' => 'no',
                 'desc_tip' => true
             ),
