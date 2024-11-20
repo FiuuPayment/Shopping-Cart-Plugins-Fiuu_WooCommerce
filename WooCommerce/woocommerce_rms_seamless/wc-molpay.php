@@ -3,7 +3,7 @@
  * Fiuu WooCommerce Shopping Cart Plugin
  * 
  * @author Fiuu Technical Team <technical-sa@razer.com>
- * @version 6.1.8
+ * @version 6.1.9
  * @example For callback : http://shoppingcarturl/?wc-api=WC_Molpay_Gateway
  * @example For notification : http://shoppingcarturl/?wc-api=WC_Molpay_Gateway
  */
@@ -14,7 +14,7 @@
  * Description: WooCommerce Fiuu | The leading payment gateway in South East Asia Grow your business with Fiuu Services payment solutions & free features: Physical Payment at 7-Eleven, Seamless Checkout, Tokenization, Loyalty Program and more for WooCommerce
  * Author: Fiuu Services Tech Team
  * Author URI: https://merchant.razer.com/
- * Version: 6.1.8
+ * Version: 6.1.9
  * License: MIT
  * Text Domain: wcmolpay
  * Domain Path: /languages/
@@ -101,6 +101,7 @@ function wcmolpay_gateway_load() {
             $this->account_type = $this->settings['account_type'];
             $this->cancelurl = $this->settings['cancelurl'];
             $this->waittime = $this->settings['waittime'];
+            $this->extend_vcode = $this->settings['extend_vcode'];
             
             // Define hostname based on account_type
             $this->url = ($this->get_option('account_type')=='1') ? "https://pay.fiuu.com/" : "https://sandbox.merchant.razer.com/";
@@ -317,6 +318,14 @@ function wcmolpay_gateway_load() {
                         '1'  => __('PRODUCTION', 'wcmolpay' ),
                         '2' => __( 'SANDBOX', 'wcmolpay' )
                         )
+                ),
+                'extend_vcode' => array(
+                    'title' => __('Extended VCode', 'wcmolpay'),
+                    'type' => 'checkbox',
+                    'label' => __('Enable extended VCode'),
+                    'description' => __('This controls the extended VCode', 'wcmolpay'),
+                    'default' => 'no',
+                    'desc_tip' => true
                 ),
                 'waittimetitle' => array(
                     'title'         => 'Payment Timeout',
@@ -861,7 +870,11 @@ function wcmolpay_gateway_load() {
             $pay_url = $this->url.'MOLPay/pay/'.$this->merchant_id;
             $total = $order->get_total();
             $order_number = $order->get_order_number();
-            $vcode = md5($order->get_total().$this->merchant_id.$order_number.$this->verify_key);
+            if ($this->extend_vcode == 'yes') {
+                $vcode = md5($order->get_total().$this->merchant_id.$order_number.$this->verify_key.get_woocommerce_currency());
+            } else {
+                $vcode = md5($order->get_total().$this->merchant_id.$order_number.$this->verify_key);
+            }
             
             if ( sizeof( $order->get_items() ) > 0 ) 
                 foreach ( $order->get_items() as $item )
