@@ -227,7 +227,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 'desc_tip' => true
             ),
             'extend_vcode' => array(
-                'title' => __('Subscription', 'wcmolpay'),
+                'title' => __('Extended VCode', 'wcmolpay'),
                 'type' => 'checkbox',
                 'label' => __('Enable extended VCode'),
                 'description' => __('This controls the extended VCode', 'wcmolpay'),
