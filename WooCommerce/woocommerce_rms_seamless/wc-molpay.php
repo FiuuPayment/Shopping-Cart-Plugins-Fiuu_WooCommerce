@@ -1,20 +1,20 @@
 <?php
 /**
- * Razer Merchant Services WooCommerce Shopping Cart Plugin
+ * Fiuu WooCommerce Shopping Cart Plugin
  * 
- * @author Razer Merchant Services Technical Team <technical-sa@razer.com>
- * @version 7.7.0
+ * @author Fiuu Technical Team <technical-sa@razer.com>
+ * @version 6.1.9
  * @example For callback : http://shoppingcarturl/?wc-api=WC_Molpay_Gateway
  * @example For notification : http://shoppingcarturl/?wc-api=WC_Molpay_Gateway
  */
 
 /**
- * Plugin Name: WooCommerce Razer Merchant Services Seamless
+ * Plugin Name: WooCommerce Fiuu Services Seamless
  * Plugin URI: https://github.com/RazerMS/WordPress_WooCommerce_WP-eCommerce_ClassiPress
- * Description: WooCommerce Razer Merchant Services | The leading payment gateway in South East Asia Grow your business with Razer Merchant Services payment solutions & free features: Physical Payment at 7-Eleven, Seamless Checkout, Tokenization, Loyalty Program and more for WooCommerce
- * Author: Razer Merchant Services Tech Team
+ * Description: WooCommerce Fiuu | The leading payment gateway in South East Asia Grow your business with Fiuu Services payment solutions & free features: Physical Payment at 7-Eleven, Seamless Checkout, Tokenization, Loyalty Program and more for WooCommerce
+ * Author: Fiuu Services Tech Team
  * Author URI: https://merchant.razer.com/
- * Version: 7.7.0
+ * Version: 6.1.9
  * License: MIT
  * Text Domain: wcmolpay
  * Domain Path: /languages/
@@ -29,7 +29,7 @@
  */
 function wcmolpay_woocommerce_fallback_notice() {
     $message = '<div class="error">';
-    $message .= '<p>' . __( 'WooCommerce Razer Merchant Services Gateway depends on the last version of <a href="http://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a> to work!' , 'wcmolpay' ) . '</p>';
+    $message .= '<p>' . __( 'WooCommerce Fiuu Gateway depends on the last version of <a href="http://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a> to work!' , 'wcmolpay' ) . '</p>';
     $message .= '</div>';
     echo $message;
 }
@@ -38,7 +38,7 @@ function wcmolpay_woocommerce_fallback_notice() {
 add_action( 'plugins_loaded', 'wcmolpay_gateway_load', 0 );
 
 /**
- * Load Razer Merchant Services gateway plugin function
+ * Load Fiuu gateway plugin function
  * 
  * @return mixed
  */
@@ -54,7 +54,7 @@ function wcmolpay_gateway_load() {
     add_filter( 'woocommerce_payment_gateways', 'wcmolpay_add_gateway' );
 
     /**
-     * Add Razer Merchant Services gateway to ensure WooCommerce can load it
+     * Add Fiuu gateway to ensure WooCommerce can load it
      * 
      * @param array $methods
      * @return array
@@ -65,13 +65,13 @@ function wcmolpay_gateway_load() {
     }
 
     /**
-     * Define the Razer Merchant Services gateway
+     * Define the Fiuu gateway
      * 
      */
     class WC_Molpay_Gateway extends WC_Payment_Gateway {
 
         /**
-         * Construct the Razer Merchant Services gateway class
+         * Construct the Fiuu gateway class
          * 
          * @global mixed $woocommerce
          */
@@ -79,10 +79,10 @@ function wcmolpay_gateway_load() {
             global $woocommerce;
 
             $this->id = 'molpay';
-            $this->icon = plugins_url( 'images/logo_RazerMerchantServices.png', __FILE__ );
+            $this->icon = plugins_url( 'images/logo_Fiuu_small.png', __FILE__ );
             $this->has_fields = false;
-            $this->method_title = __( 'Razer Merchant Services', 'wcmolpay' );
-            $this->method_description = __( 'Proceed payment via Razer Merchant Services Seamless Integration Plugin', 'woocommerce' );
+            $this->method_title = __( 'Fiuu', 'wcmolpay' );
+            $this->method_description = __( 'Proceed payment via Fiuu Seamless Integration Plugin', 'woocommerce' );
 
             // Load the form fields.
             $this->init_form_fields();
@@ -99,10 +99,13 @@ function wcmolpay_gateway_load() {
             $this->verify_key = $this->settings['verify_key'];
             $this->secret_key = $this->settings['secret_key'];
             $this->account_type = $this->settings['account_type'];
+            $this->cancelurl = $this->settings['cancelurl'];
+            $this->waittime = $this->settings['waittime'];
+            $this->extend_vcode = $this->settings['extend_vcode'];
             
             // Define hostname based on account_type
-            $this->url = ($this->get_option('account_type')=='1') ? "https://www.onlinepayment.com.my/" : "https://sandbox.merchant.razer.com/" ;
-            $this->inquiry_url = ($this->get_option('account_type')=='1') ? "https://api.merchant.razer.com/" : "https://sandbox.merchant.razer.com/" ;
+            $this->url = ($this->get_option('account_type')=='1') ? "https://pay.fiuu.com/" : "https://sandbox.merchant.razer.com/";
+            $this->inquiry_url = ($this->get_option('account_type')=='1') ? "https://api.fiuu.com/" : "https://sandbox.merchant.razer.com/";
             
             // Define channel setting variables
             $this->credit = ($this->get_option('credit')=='yes' ? true : false);
@@ -180,6 +183,9 @@ function wcmolpay_gateway_load() {
             $this->OMISE_TL = ($this->get_option('OMISE_TL')=='yes' ? true : false);
             $this->Crypto_tripleA = ($this->get_option('Crypto_tripleA')=='yes' ? true : false);
             $this->Atome = ($this->get_option('Atome')=='yes' ? true : false);
+            $this->Pace = ($this->get_option('Pace')=='yes' ? true : false);
+            $this->cimb_ebpg = ($this->get_option('cimb-ebpg')=='yes' ? true : false);
+            $this->pbb_cybs = ($this->get_option('pbb-cybs')=='yes' ? true : false);
 
             // Transaction Type for Credit Channel
             $this->credit_tcctype = ($this->get_option('credit_tcctype')=='SALS' ? 'SALS' : 'AUTH');
@@ -228,8 +234,8 @@ function wcmolpay_gateway_load() {
          */
         public function admin_options() {
             ?>
-            <h3><?php _e( 'Razer Merchant Services', 'wcmolpay' ); ?></h3>
-            <p><?php _e( 'Razer Merchant Services works by sending the user to Razer Merchant Services to enter their payment information.', 'wcmolpay' ); ?></p>
+            <h3><?php _e( 'Fiuu', 'wcmolpay' ); ?></h3>
+            <p><?php _e( 'Fiuu works by sending the user to Fiuu to enter their payment information.', 'wcmolpay' ); ?></p>
             <table class="form-table">
                 <?php $this->generate_settings_html(); ?>
             </table><!--/.form-table-->
@@ -245,7 +251,7 @@ function wcmolpay_gateway_load() {
                 'enabled' => array(
                     'title' => __( 'Enable/Disable', 'wcmolpay' ),
                     'type' => 'checkbox',
-                    'label' => __( 'Enable Razer Merchant Services', 'wcmolpay' ),
+                    'label' => __( 'Enable Fiuu', 'wcmolpay' ),
                     'default' => 'yes'
                 ),
                 'ordering_plugin' => array(
@@ -267,7 +273,7 @@ function wcmolpay_gateway_load() {
                     'title' => __( 'Title', 'wcmolpay' ),
                     'type' => 'text',
                     'description' => __( 'This controls the title which the user sees during checkout.', 'wcmolpay' ),
-                    'default' => __( 'Razer Merchant Services', 'wcmolpay' ),
+                    'default' => __( 'Fiuu', 'wcmolpay' ),
                     'desc_tip' => true,
                 ),
                 'payment_title' => array(
@@ -282,25 +288,25 @@ function wcmolpay_gateway_load() {
                     'title' => __( 'Description', 'wcmolpay' ),
                     'type' => 'textarea',
                     'description' => __( 'This controls the description which the user sees during checkout.', 'wcmolpay' ),
-                    'default' => __( 'Razer Merchant Services', 'wcmolpay' ),
+                    'default' => __( 'Fiuu', 'wcmolpay' ),
                     'desc_tip' => true,
                 ),
                 'merchant_id' => array(
                     'title' => __( 'Merchant ID', 'wcmolpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your Razer Merchant Services Merchant ID.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sRazer Merchant Services Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your Fiuu Merchant ID.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
                     'default' => ''
                 ),
                 'verify_key' => array(
                     'title' => __( 'Verify Key', 'wcmolpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your Razer Merchant Services Verify Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sRazer Merchant Services Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your Fiuu Verify Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
                     'default' => ''
                 ),
                 'secret_key' => array(
                     'title' => __( 'Secret Key', 'wcmolpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your Razer Merchant Services Secret Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sRazer Merchant Services Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your Fiuu Secret Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
                     'default' => ''
                 ),
                 'account_type' => array(
@@ -313,6 +319,34 @@ function wcmolpay_gateway_load() {
                         '2' => __( 'SANDBOX', 'wcmolpay' )
                         )
                 ),
+                'extend_vcode' => array(
+                    'title' => __('Extended VCode', 'wcmolpay'),
+                    'type' => 'checkbox',
+                    'label' => __('Enable extended VCode'),
+                    'description' => __('This controls the extended VCode', 'wcmolpay'),
+                    'default' => 'no',
+                    'desc_tip' => true
+                ),
+                'waittimetitle' => array(
+                    'title'         => 'Payment Timeout',
+                    'type'          => 'title',
+                    'description'   => '',
+                ),
+
+                'waittime' => array(
+                    'title' => __( 'Timeout (seconds)', 'wcmolpay' ),
+                    'type' => 'number',
+                    'description' => __( 'This controls the timeout in Fiuu Card Hosted Page.', 'wcmolpay' ),
+                    'default' => ''
+                ),
+
+                'cancelurl' => array(
+                    'title' => __( 'Cancel URL', 'wcmolpay' ),
+                    'type' => 'text',
+                        'description' => __( 'This is the URL redirect after exceeding timeout, please ensure the domain of this URL is registered in Fiuu Portal, Example: (https://yourdomain.com/cancel)', 'wcmolpay' ),
+                    'default' => ''
+                ),
+                
                 'channel' => array(
                     'title'         => 'Channel to be Enabled',
                     'type'          => 'title',
@@ -338,6 +372,20 @@ function wcmolpay_gateway_load() {
                     'label' => __( ' ', 'wcmolpay' ),
                     'default' => 'no'
                 
+                ),
+                'cimb-ebpg' => array(
+                    'title' => __( 'CIMB Bank (Installment) ', 'wcmolpay' ),
+                    'type' => 'checkbox',
+                    'label' => __( ' ', 'wcmolpay' ),
+                    'default' => 'no'
+                    
+                ),
+                'pbb-cybs' => array(
+                    'title' => __( 'Public Bank (Installment) ', 'wcmolpay' ),
+                    'type' => 'checkbox',
+                    'label' => __( ' ', 'wcmolpay' ),
+                    'default' => 'no'
+                    
                 ),
                 'ESUN_Cash711' => array(
                     'title' => __( 'ESUN Cash-711', 'wcmolpay' ),
@@ -626,7 +674,7 @@ function wcmolpay_gateway_load() {
                     'default' => 'no'
                 ),
                 'cash-711' => array(
-                    'title' => __( '7-Eleven (Razer Cash)', 'wcmolpay' ),
+                    'title' => __( '7-Eleven (Fiuu Cash)', 'wcmolpay' ),
                     'type' => 'checkbox',
                     'label' => __( ' ', 'wcmolpay' ),
                     'default' => 'no'
@@ -686,7 +734,7 @@ function wcmolpay_gateway_load() {
                     'default' => 'no'
                 ),
                 'RazerPay' => array(
-                    'title' => __( 'Razer Pay', 'wcmolpay' ),
+                    'title' => __( 'Fiuu Pay', 'wcmolpay' ),
                     'type' => 'checkbox',
                     'label' => __( ' ', 'wcmolpay' ),
                     'default' => 'no'
@@ -776,6 +824,13 @@ function wcmolpay_gateway_load() {
                     'default' => 'no'
                 
                 ),
+                'Pace' => array(
+                    'title' => __( 'Pace', 'wcmolpay' ),
+                    'type' => 'checkbox',
+                    'label' => __( ' ', 'wcmolpay' ),
+                    'default' => 'no'
+                
+                ),
                 'tcctype' => array(
                     'title'         => 'Transaction Type for Credit Card / Debit Card Channel',
                     'type'          => 'title',
@@ -815,7 +870,11 @@ function wcmolpay_gateway_load() {
             $pay_url = $this->url.'MOLPay/pay/'.$this->merchant_id;
             $total = $order->get_total();
             $order_number = $order->get_order_number();
-            $vcode = md5($order->get_total().$this->merchant_id.$order_number.$this->verify_key);
+            if ($this->extend_vcode == 'yes') {
+                $vcode = md5($order->get_total().$this->merchant_id.$order_number.$this->verify_key.get_woocommerce_currency());
+            } else {
+                $vcode = md5($order->get_total().$this->merchant_id.$order_number.$this->verify_key);
+            }
             
             if ( sizeof( $order->get_items() ) > 0 ) 
                 foreach ( $order->get_items() as $item )
@@ -845,18 +904,21 @@ function wcmolpay_gateway_load() {
             
             $mpsreturn = add_query_arg( 'wc-api', 'WC_Molpay_Gateway', home_url( '/' ));
             $latest = ($this->get_option('account_type')=='1') ? "3.28" : "latest" ;
+
+            $cancelurl = !empty($this->cancelurl) ? $this->cancelurl.'/'.$order_number : '';
+
             return "<form action='".$pay_url."/' method='post' id='molpay_payment_form' name='molpay_payment_form'  
             onsubmit='if(document.getElementById(\"agree\").checked) { return true; } else { alert(\"Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy\"); return false; }'>"
                     . implode('', $molpay_args_array)
                     ."<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>"
-                    ."<script src='".$this->url."MOLPay/API/seamless/".$latest."/js/MOLPay_seamless.deco.js'></script>"
-                    ."<h3><u>Pay via</u>:</h3><img src='".plugins_url( 'images/logo_RazerMerchantServices.png', __FILE__ )."' width='200px'>"
+                    ."<script src='".$this->url."RMS/API/seamless/".$latest."/js/MOLPay_seamless.deco.js'></script>"
+                    ."<h3><u>Pay via</u>:</h3><img src='".plugins_url( 'images/logo_Fiuu.png', __FILE__ )."' width='200px'>"
                     ."<br/>"
                     ."<br/>"
                     ." <input type='checkbox' name='checkbox' value='check' id='agree' /> I have read and agree to the <b> <a href='https://merchant.razer.com/v3/terms-of-service/' target='_blank'>Terms & Conditions</a> </b> and <b><a href='https://merchant.razer.com/v3/privacy-policy/' target='_blank'>Privacy Policy</a></b>."
                     ."<br/>"
                     ."<br/>"
-                    .($this->credit ? "<button type='button' style='background:none; padding:0px' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpstcctype='".$this->credit_tcctype."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='credit16' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/credit.png', __FILE__ )."' width='100px' height='50px'/></button>" : '')
+                    .($this->credit ? "<button type='button' style='background:none; padding:0px' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpstcctype='".$this->credit_tcctype."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='creditAN' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."' data-mpscancelurl='".$cancelurl."' data-mpswaittime='".$this->waittime."'><img src='".plugins_url( 'images/credit.png', __FILE__ )."' width='100px' height='50px'/></button>" : '')
                     .($this->credit7 ? "<button type='button' style='background:none; padding:0px' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpstcctype='".$this->credit_tcctype."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='credit7' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/credit.png', __FILE__ )."' width='100px' height='50px'/></button>" : '')
                     .($this->fpx_mb2u ? "<button type='button' style='background:none; padding:0px;' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='fpx_mb2u' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/fpx_mb2u.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
                     .($this->PayNow ? "<button type='button' style='background:none; padding:0px;' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='PayNow' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/PayNow.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
@@ -867,6 +929,7 @@ function wcmolpay_gateway_load() {
                     .($this->fpx_cimbclicks ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='fpx_cimbclicks' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/fpx_cimbclicks.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
                     .($this->Crypto_tripleA ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='Crypto_tripleA' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/Crypto_tripleA.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
                     .($this->Atome ? "<button type='button' style='background:none; padding:0px;' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='Atome' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/Atome.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
+                    .($this->Pace ? "<button type='button' style='background:none; padding:0px;' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='pace' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/Pace.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
                     .($this->fpx_hlb ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='fpx_hlb' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/fpx_hlb.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
                     .($this->fpx_rhb ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='fpx_rhb' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/fpx_rhb.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')                   
                     .($this->fpx_amb ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='fpx_amb' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/fpx_amb.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
@@ -971,7 +1034,7 @@ function wcmolpay_gateway_load() {
         }
 
         /**
-         * Check for Razer Merchant Services Response
+         * Check for Fiuu Response
          *
          * @access public
          * @return void
@@ -986,7 +1049,7 @@ function wcmolpay_gateway_load() {
             } else if ( $_POST['nbcb']=='2' ) {
                 do_action ( "valid_molpay_request_notification", $_POST );
             } else {
-                wp_die( "Razer Merchant Services Request Failure" );
+                wp_die( "Fiuu Request Failure" );
             }
         }
         
@@ -1068,7 +1131,7 @@ function wcmolpay_gateway_load() {
          */
         public function merchant_id_missing_message() {
             $message = '<div class="error">';
-            $message .= '<p>' . sprintf( __( '<strong>Gateway Disabled</strong> You should fill in your Merchant ID in Razer Merchant Services. %sClick here to configure!%s' , 'wcmolpay' ), '<a href="' . get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=wc_molpay_gateway">', '</a>' ) . '</p>';
+            $message .= '<p>' . sprintf( __( '<strong>Gateway Disabled</strong> You should fill in your Merchant ID in Fiuu. %sClick here to configure!%s' , 'wcmolpay' ), '<a href="' . get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=wc_molpay_gateway">', '</a>' ) . '</p>';
             $message .= '</div>';
             echo $message;
         }
@@ -1079,7 +1142,7 @@ function wcmolpay_gateway_load() {
          */
         public function verify_key_missing_message() {
             $message = '<div class="error">';
-            $message .= '<p>' . sprintf( __( '<strong>Gateway Disabled</strong> You should fill in your Verify Key in Razer Merchant Services. %sClick here to configure!%s' , 'wcmolpay' ), '<a href="' . get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=wc_molpay_gateway">', '</a>' ) . '</p>';
+            $message .= '<p>' . sprintf( __( '<strong>Gateway Disabled</strong> You should fill in your Verify Key in Fiuu. %sClick here to configure!%s' , 'wcmolpay' ), '<a href="' . get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=wc_molpay_gateway">', '</a>' ) . '</p>';
             $message .= '</div>';
             echo $message;
         }
@@ -1090,7 +1153,7 @@ function wcmolpay_gateway_load() {
          */
         public function secret_key_missing_message() {
             $message = '<div class="error">';
-            $message .= '<p>' . sprintf( __( '<strong>Gateway Disabled</strong> You should fill in your Secret Key in Razer Merchant Services. %sClick here to configure!%s' , 'wcmolpay' ), '<a href="' . get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=wc_molpay_gateway">', '</a>' ) . '</p>';
+            $message .= '<p>' . sprintf( __( '<strong>Gateway Disabled</strong> You should fill in your Secret Key in Fiuu. %sClick here to configure!%s' , 'wcmolpay' ), '<a href="' . get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=wc_molpay_gateway">', '</a>' ) . '</p>';
             $message .= '</div>';
             echo $message;
         }
@@ -1101,7 +1164,7 @@ function wcmolpay_gateway_load() {
          */
         public function account_type_missing_message() {
             $message = '<div class="error">';
-            $message .= '<p>' . sprintf( __( '<strong>Gateway Disabled</strong> Select account type in Razer Merchant Services. %sClick here to configure!%s' , 'wcmolpay' ), '<a href="' . get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=wc_molpay_gateway">', '</a>' ) . '</p>';
+            $message .= '<p>' . sprintf( __( '<strong>Gateway Disabled</strong> Select account type in Fiuu. %sClick here to configure!%s' , 'wcmolpay' ), '<a href="' . get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=wc_molpay_gateway">', '</a>' ) . '</p>';
             $message .= '</div>';
             echo $message;
         }
@@ -1116,7 +1179,7 @@ function wcmolpay_gateway_load() {
          */
         public function inquiry_status($tranID, $amount, $domain) {
             $verify_key = $this->verify_key;
-            $requestUrl = $this->inquiry_url."RMS/q_by_tid.php";
+            $requestUrl = $this->inquiry_url."MOLPay/q_by_tid.php";
             $request_param = array(
                 "amount"    => number_format($amount,2),
                 "txID"      => intval($tranID),
@@ -1149,7 +1212,7 @@ function wcmolpay_gateway_load() {
         }
 
         /**
-         * Update Cart based on Razer Merchant Services status
+         * Update Cart based on Fiuu status
          * 
          * @global mixed $woocommerce
          * @param int $order_id
@@ -1196,7 +1259,10 @@ function wcmolpay_gateway_load() {
                 'kuwait-finace' => 'fpx_kfh',
                 'ocbc' => 'fpx_ocbc',
                 'scb' => 'fpx_scb',
-                'uob' => 'fpx_uob'
+                'uob' => 'fpx_uob',
+                'TNG-EWALLET' => 'TNG_EWALLET',
+                'cimb-ebpg' => 'cimb_ebpg',
+                'pbb-cybs' => 'pbb_cybs'
             );
 
             if (isset($channel_mappings[$channel])) {
@@ -1205,11 +1271,11 @@ function wcmolpay_gateway_load() {
 
             $getStatus = $order->get_status();
             if(!in_array($getStatus,array('processing','completed'))) {
-                $order->add_order_note('Razer Merchant Services Payment Status: '.$M_status.'<br>Transaction ID: ' . $tranID . $referer);
+                $order->add_order_note('Fiuu Payment Status: '.$M_status.'<br>Transaction ID: ' . $tranID . $referer);
                 if ($MOLPay_status == "00") {
                     $order->payment_complete();
                 } else {
-                    $order->update_status($W_status, sprintf(__('Payment %s via Razer Merchant Services.', 'woocommerce'), $tranID ) );
+                    $order->update_status($W_status, sprintf(__('Payment %s via Fiuu.', 'woocommerce'), $tranID ) );
                 }
                 if ($this->payment_title == 'yes') {
                     $paytitle = $this->form_fields[strtolower($channel)]['title'];
@@ -1307,7 +1373,7 @@ function wcmolpay_gateway_load() {
                     $postData[]= $k."=".$v;
                 }
                 $postdata = implode("&",$postData);
-                $url = $this->url."RMS/API/chkstat/returnipn.php";
+                $url = $this->url."MOLPay/API/chkstat/returnipn.php";
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_POST , 1 );
                 curl_setopt($ch, CURLOPT_POSTFIELDS , $postdata );
@@ -1340,7 +1406,7 @@ function wcmolpay_gateway_load() {
             $appcode = $response['appcode'];
             $paydate = $response['paydate'];
             $skey = $response['skey'];
-            $vkey = $this->verify_key;
+            $vkey = $this->secret_key;
             
             $key0 = md5($tranID.$orderid.$status.$domain.$amount.$currency);
             $key1 = md5($paydate.$domain.$key0.$appcode.$vkey);

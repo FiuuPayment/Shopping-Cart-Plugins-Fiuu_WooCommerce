@@ -28,7 +28,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
         $this->secret_key = $this->settings['secret_key'];
         $this->account_type = $this->settings['account_type'];
         $this->recurring = $this->settings['recurring'];
-		$this->extend_vcode = $this->settings['extend_vcode'];
+        $this->extend_vcode = $this->settings['extend_vcode'];
 
         // Define hostname based on account_type
         $this->url = ($this->get_option('account_type') == '1') ? "https://pay.fiuu.com/" : "https://sandbox.merchant.razer.com/";
@@ -218,7 +218,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                     '2' => __('SANDBOX', 'wcmolpay')
                 )
             ),
-            'recurring' => array( //recurring part
+            'recurring' => array(
                 'title' => __('Subscription', 'wcmolpay'),
                 'type' => 'checkbox',
                 'label' => __('Enable recurring payment'),
@@ -226,8 +226,8 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 'default' => 'no',
                 'desc_tip' => true
             ),
-			    'extend_vcode' => array( //
-                'title' => __('Subscription', 'wcmolpay'),
+            'extend_vcode' => array(
+                'title' => __('Extended VCode', 'wcmolpay'),
                 'type' => 'checkbox',
                 'label' => __('Enable extended VCode'),
                 'description' => __('This controls the extended VCode', 'wcmolpay'),
@@ -249,7 +249,11 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
         $pay_url = $this->url . 'MOLPay/pay/' . $this->merchant_id;
         $total = $order->get_total();
         $order_number = $order->get_order_number();
-        $vcode = md5($order->get_total() . $this->merchant_id . $order_number . $this->verify_key);
+        if ($this->extend_vcode == 'yes') {
+            $vcode = md5($order->get_total() . $this->merchant_id . $order_number . $this->verify_key . get_woocommerce_currency());
+        } else {
+            $vcode = md5($order->get_total() . $this->merchant_id . $order_number . $this->verify_key);
+        }
 
         if (sizeof($order->get_items()) > 0)
             foreach ($order->get_items() as $item)
