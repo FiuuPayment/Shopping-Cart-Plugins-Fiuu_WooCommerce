@@ -995,7 +995,46 @@ function wcmolpay_gateway_load() {
             //         .($this->FPX_B2B_UOBR ? "<button type='button' style='background:none; padding:0px;' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='FPX_B2B_UOBR' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/FPX_B2B_UOBR.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
             //         . "</form>";
 
+            return "<form action='".$pay_url."/' method='post' id='molpay_payment_form' name='molpay_payment_form'  
+                    onsubmit='if(document.getElementById(\"agree\").checked) { return true; } else { alert(\"Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy\"); return false; }'>"
             
+                    . "<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>"
+                    . "<script src='".$this->url."RMS/API/seamless/".$latest."/js/MOLPay_seamless.deco.js'></script>"
+                    . "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css'>"
+            
+                    . "<h3 style='font-size:16px; font-weight:bold;'><u>Pay via</u>:</h3>"
+                    . "<img src='".plugins_url('images/logo_Fiuu.png', __FILE__)."' width='150px' style='display:block; margin-bottom:10px;'>"
+            
+                    . "<div id='main-buttons' style='display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;'>"
+                        . ($this->credit || $this->credit7 ? "<button type='button' class='category-btn' style='background:white; border-radius:5px; border:2px solid gray; outline:none;' data-category='card'><img src='".plugins_url('images/card-payment.png', __FILE__)."' width='100%'/></button>" : '')
+                        . ($this->cimb_ebpg || $this->pbb_cybs ?"<button type='button' class='category-btn' style='background:white; border-radius:5px; border:2px solid gray; outline:none;' data-category='card-installment'><img src='".plugins_url('images/card-instalment.png', __FILE__)."' width='100%'/></button>" : '')
+                        . ($this->BBL_IB_U || $this->BAY_IB_U || $this->UPOP || $this->dragonpay || $this->fpx_abb || $this->fpx_abmb || $this->fpx_amb || $this->fpx_bimb || $this->fpx_bkrm || $this->fpx_bmmb || $this->fpx_bsn || $this->fpx_cimbclicks || $this->fpx_hsbc || $this->fpx_hlb || $this->fpx_kfh || $this->fpx_mb2u || $this->FPX_M2E || $this->fpx_ocbc || $this->fpx_pbb || $this->fpx_rhb || $this->fpx_scb || $this->fpx_uob || $this->KBANK_PayPlus || $this->KTB_IB_U || $this->NGANLUONG || $this->SCB_IB_U || $this->paysbuy || $this->FPX_B2B_ABB || $this->FPX_B2B_ABBM || $this->FPX_B2B_ABMB || $this->FPX_B2B_AMB || $this->FPX_B2B_BIMB || $this->FPX_B2B_BKRM || $this->FPX_B2B_BMMB || $this->FPX_B2B_CIMB || $this->FPX_B2B_BNP || $this->FPX_B2B_CITIBANK || $this->FPX_B2B_DEUTSCHE || $this->FPX_B2B_HLB || $this->FPX_B2B_HSBC || $this->FPX_B2B_KFH || $this->FPX_B2B_OCBC || $this->FPX_B2B_PBB || $this->FPX_B2B_PBBE || $this->FPX_B2B_RHB || $this->FPX_B2B_SCB || $this->FPX_B2B_UOB || $this->FPX_B2B_UOBR
+                        ? "<button type='button' class='category-btn' style='background:white; border-radius:5px; border:2px solid gray; outline:none;' data-category='online-banking'><img src='".plugins_url('images/online-banking.png', __FILE__)."' width='100%'/></button>" : '')
+                        . ($this->alipay || $this->BOOST || $this->Crypto_tripleA || $this->RazerPay || $this->GrabPay || $this->MB2U_QRPay_Push || $this->PayNow || $this->Point_BCard || $this->ShopeePay || $this->TNG_EWALLET || $this->WeChatPay || $this->WeChatPayMY ? "<button type='button' class='category-btn' style='background:white; border-radius:5px; border:2px solid gray; outline:none ;' data-category='qr-ewallet'><img src='".plugins_url('images/ewallet.png', __FILE__)."' width='100%'/></button>" : '')
+                        . ($this->cash_711 || $this->BigC || $this->singpost || $this->ESUN_ATM || $this->ESUN_Cash711 || $this->ESUN_CashFamilyMart || $this->ESUN_CashHiLife || $this->OMISE_TL || $this->ATMVA ? "<button type='button' class='category-btn' style='background:white; border-radius:5px; border:2px solid gray; outline:none;' data-category='cash-payment'><img src='".plugins_url('images/fiuu_cash.png', __FILE__)."' width='100%'/></button>" : '')              
+                        . ($this->Atome || $this->IOUPay_PW ?"<button type='button' class='category-btn' style='background:white; border-radius:5px; border:2px solid gray; outline:none;' data-category='bnpl'><img src='".plugins_url('images/pay-later.png', __FILE__)."' width='100%'/></button>" : '')                
+                        . "</div>"
+
+                    . "<label style='font-size:14px; display: block; margin-bottom: 10px;'><i class='fa-solid fa-circle-info' style='font-size: 12px;'></i>    Please ensure all payment details are accurate.</label>"
+                    ."<br/>"
+            
+                    . "<div id='custom-dropdown' style='position: relative; display: inline-block; width: 500px; margin-bottom:10px;'>"
+                        . "<button id='dropdown-button' type='button' style='width: 100%; padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; background:white; text-align:left; display:flex; align-items:center; outline:none;'>"
+                        . "Select payment method"
+                        . "</button>"
+                        . "<div id='dropdown-list' style='display: none; position: absolute; width: 100%; background: white; border: 1px solid #ccc; border-radius: 8px; z-index: 10; max-height: 300px; overflow-y: auto;'></div>"
+                    . "</div>"
+
+                    . "<label for='agree' style='font-size: 14px; display: block; margin-bottom: 15px;'>"
+                        . "<input type='checkbox' name='checkbox' value='check' id='agree' style='margin-right: 5px;' />"
+                            . " I have read and agree to the <b> <a href='https://merchant.razer.com/v3/terms-of-service/' style='color: #44d62c;' target='_blank'>Terms & Conditions</a> </b> and "
+                            . "<b><a href='https://merchant.razer.com/v3/privacy-policy/' style='color: #44d62c;' target='_blank'>Privacy Policy</a></b>."
+                        . "<br/>"
+                    . "</label>"
+            
+                    . "<div id='div_generatedSingleBtn'>"
+                        . "<button id='pay-button' type='button' class='btn btn-success btn-lg' style='width:200px; background-color:#44d62c; font-size:20px; padding:10px; border-radius:5px; border:none; margin-bottom:30px;'>Pay</button>"
+                    . "</div>"
         }
         
 
