@@ -359,11 +359,11 @@ function wcmolpay_gateway_load() {
                     'default' => 'no'
                 
                 ),
-                'credit7' => array(
-                    'title' => __( 'FIRSTDATA', 'wcmolpay' ),
-                    'type' => 'checkbox',
-                    'label' => __( ' ', 'wcmolpay' ),
-                    'default' => 'no'
+                // 'credit7' => array(
+                //     'title' => __( 'FIRSTDATA', 'wcmolpay' ),
+                //     'type' => 'checkbox',
+                //     'label' => __( ' ', 'wcmolpay' ),
+                //     'default' => 'no'
                 
                 ),
                 'PayNow' => array(
@@ -685,12 +685,12 @@ function wcmolpay_gateway_load() {
                     'label' => __( ' ', 'wcmolpay' ),
                     'default' => 'no'
                 ),
-                'enetsD' => array(
-                    'title' => __( 'eNETS', 'wcmolpay' ),
-                    'type' => 'checkbox',
-                    'label' => __( ' ', 'wcmolpay' ),
-                    'default' => 'no'
-                ),
+                // 'enetsD' => array(
+                //     'title' => __( 'eNETS', 'wcmolpay' ),
+                //     'type' => 'checkbox',
+                //     'label' => __( ' ', 'wcmolpay' ),
+                //     'default' => 'no'
+                // ),
                 'singpost' => array(
                     'title' => __( 'Cash-SAM', 'wcmolpay' ),
                     'type' => 'checkbox',
@@ -745,12 +745,12 @@ function wcmolpay_gateway_load() {
                     'label' => __( ' ', 'wcmolpay' ),
                     'default' => 'no'
                 ),
-                'Rely-PW' => array(
-                    'title' => __( 'Rely', 'wcmolpay' ),
-                    'type' => 'checkbox',
-                    'label' => __( ' ', 'wcmolpay' ),
-                    'default' => 'no'
-                ),
+                // 'Rely-PW' => array(
+                //     'title' => __( 'Rely', 'wcmolpay' ),
+                //     'type' => 'checkbox',
+                //     'label' => __( ' ', 'wcmolpay' ),
+                //     'default' => 'no'
+                // ),
                 'IOUPay-PW' => array(
                     'title' => __( 'IOUPay', 'wcmolpay' ),
                     'type' => 'checkbox',
@@ -824,13 +824,12 @@ function wcmolpay_gateway_load() {
                     'default' => 'no'
                 
                 ),
-                'Pace' => array(
-                    'title' => __( 'Pace', 'wcmolpay' ),
-                    'type' => 'checkbox',
-                    'label' => __( ' ', 'wcmolpay' ),
-                    'default' => 'no'
-                
-                ),
+                // 'Pace' => array(
+                //     'title' => __( 'Pace', 'wcmolpay' ),
+                //     'type' => 'checkbox',
+                //     'label' => __( ' ', 'wcmolpay' ),
+                //     'default' => 'no'
+                // ),
                 'tcctype' => array(
                     'title'         => 'Transaction Type for Credit Card / Debit Card Channel',
                     'type'          => 'title',
