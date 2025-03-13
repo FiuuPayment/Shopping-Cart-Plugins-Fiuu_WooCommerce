@@ -1035,6 +1035,167 @@ function wcmolpay_gateway_load() {
                     . "<div id='div_generatedSingleBtn'>"
                         . "<button id='pay-button' type='button' class='btn btn-success btn-lg' style='width:200px; background-color:#44d62c; font-size:20px; padding:10px; border-radius:5px; border:none; margin-bottom:30px;'>Pay</button>"
                     . "</div>"
+
+                    . "<script>
+                jQuery(document).ready(function() {
+                    var paymentOptions = {
+                        'card': {
+                           " . ($this->credit ? "'Credit/Debit Card': { value: 'creditAN', image: '".plugins_url('images/credit.png', __FILE__)."' }," : '') . "
+                        },
+                        'card-installment': {
+                           " . ($this->cimb_ebpg ? "'CIMB Bank (Installment)': { value: 'cimb_ebpg', image: '".plugins_url('images/fpx_cimbclicks.png', __FILE__)."' }," : '') . "
+                           " . ($this->pbb_cybs ? "'Public Bank (Installment)': { value: 'pbb_cybs', image: '".plugins_url('images/fpx_pbb.png', __FILE__)."' }," : '') . "
+                        },
+                        'online-banking': {
+                           " . ($this->BBL_IB_U ? "'Bangkok Bank': { value: 'BBL_IB_U', image: '".plugins_url('images/BBL_IB_U.png', __FILE__)."' }," : '') . "
+                           " . ($this->BAY_IB_U ? "'Bank of Ayudhya (Krungsi)': { value: 'BAY_IB_U', image: '".plugins_url('images/BAY_IB_U.png', __FILE__)."' }," : '') . "
+                           " . ($this->UPOP ? "'China Union Pay': { value: 'UPOP', image: '".plugins_url('images/UPOP.png', __FILE__)."' }," : '') . "
+                           " . ($this->dragonpay ? "'Dragonpay': { value: 'dragonpay', image: '".plugins_url('images/dragonpay.png', __FILE__)."' }," : '') . "
+                           " . ($this->fpx_abb ? "'FPX Affin Bank (Affin Online)': { value: 'fpx_abb', image: '".plugins_url('images/fpx_abb.png', __FILE__)."' }," : '') . "
+                           " . ($this->fpx_abmb ? "'FPX Alliance Bank (Alliance Online)': { value: 'fpx_abmb', image: '".plugins_url('images/fpx_abmb.png', __FILE__)."' }," : '') . "
+                           " . ($this->fpx_amb ? "'FPX Am Bank (Am Online)': { value: 'fpx_amb', image: '".plugins_url('images/fpx_amb.png', __FILE__)."' }," : '') . "
+                           " . ($this->fpx_bimb ? "'FPX Bank Islam': { value: 'fpx_bimb', image: '".plugins_url('images/fpx_bimb.png', __FILE__)."' }," : '') . "
+                           " . ($this->fpx_bkrm ? "'FPX Bank Rakyat': { value: 'fpx_bkrm', image: '".plugins_url('images/fpx_bkrm.png', __FILE__)."' }," : '') . "
+                           " . ($this->fpx_bmmb ? "'FPX Bank Muamalat': { value: 'fpx_bmmb', image: '".plugins_url('images/fpx_bmmb.png', __FILE__)."' }," : '') . "
+                           " . ($this->fpx_bsn ? "'FPX Bank Simpanan Nasional (myBSN)': { value: 'fpx_bsn', image: '".plugins_url('images/fpx_bsn.png', __FILE__)."' }," : '') . "
+                           " . ($this->fpx_cimbclicks ? "'FPX CIMB Bank (CIMB Clicks)': { value: 'fpx_cimbclicks', image: '".plugins_url('images/fpx_cimbclicks.png', __FILE__)."' }," : '') . "
+                           " . ($this->fpx_hsbc ? "'FPX Hongkong and Shanghai Banking Corporation': { value: 'fpx_hsbc', image: '".plugins_url('images/fpx_hsbc.png', __FILE__)."' }," : '') . "
+                           " . ($this->fpx_hlb ? "'FPX Hong Leong Bank (HLB Connect)': { value: 'fpx_hlb', image: '".plugins_url('images/fpx_hlb.png', __FILE__)."' }," : '') . "
+                           " . ($this->fpx_kfh ? "'FPX Kuwait Finance House': { value: 'fpx_kfh', image: '".plugins_url('images/fpx_kfh.png', __FILE__)."' }," : '') . "
+                           " . ($this->fpx_mb2u ? "'FPX Maybank2u': { value: 'fpx_mb2u', image: '".plugins_url('images/fpx_mb2u.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_M2E ? "'FPX Maybank2e': { value: 'FPX_M2E', image: '".plugins_url('images/FPX_M2E.png', __FILE__)."' }," : '') . "
+                           " . ($this->fpx_ocbc ? "'FPX OCBC Bank': { value: 'fpx_ocbc', image: '".plugins_url('images/fpx_ocbc.png', __FILE__)."' }," : '') . "
+                           " . ($this->fpx_pbb ? "'FPX PublicBank (PBB Online)': { value: 'fpx_pbb', image: '".plugins_url('images/fpx_pbb.png', __FILE__)."' }," : '') . "
+                           " . ($this->fpx_rhb ? "'FPX RHB': { value: 'fpx_rhb', image: '".plugins_url('images/rhb.png', __FILE__)."' }," : '') . "
+                           " . ($this->fpx_scb ? "'FPX Standard Chartered Bank': { value: 'fpx_scb', image: '".plugins_url('images/fpx_scb.png', __FILE__)."' }," : '') . "
+                           " . ($this->fpx_uob ? "'FPX United Overseas Bank (UOB)': { value: 'fpx_uob', image: '".plugins_url('images/fpx_uob.png', __FILE__)."' }," : '') . "
+                           " . ($this->KBANK_PayPlus ? "'Kasikornbank K PLUS': { value: 'KBANK_PayPlus', image: '".plugins_url('images/KBANK_PayPlus.png', __FILE__)."' }," : '') . "
+                           " . ($this->KTB_IB_U ? "'Krung Thai Bank': { value: 'KTB_IB_U', image: '".plugins_url('images/KTB_IB_U.png', __FILE__)."' }," : '') . "
+                           " . ($this->NGANLUONG ? "'NGANLUONG': { value: 'NGANLUONG', image: '".plugins_url('images/NGANLUONG.png', __FILE__)."' }," : '') . "
+                           " . ($this->SCB_IB_U ? "'Siam Commercial Bank': { value: 'SCB_IB_U', image: '".plugins_url('images/SCB_IB_U.png', __FILE__)."' }," : '') . "
+                           " . ($this->paysbuy ? "'PaysBuy': { value: 'paysbuy', image: '".plugins_url('images/paysbuy.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_ABB ? "'FPX B2B Affin Bank': { value: 'FPX_B2B_ABB', image: '".plugins_url('images/FPX_B2B_ABB.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_ABBM ? "'FPX B2B AffinMax': { value: 'FPX_B2B_ABBM', image: '".plugins_url('images/FPX_B2B_ABBM.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_ABMB ? "'FPX B2B Alliance Bank': { value: 'FPX_B2B_ABMB', image: '".plugins_url('images/FPX_B2B_ABMB.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_AMB ? "'FPX B2B AmBank': { value: 'FPX_B2B_AMB', image: '".plugins_url('images/FPX_B2B_AMB.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_BIMB ? "'FPX B2B Bank Islam': { value: 'FPX_B2B_BIMB', image: '".plugins_url('images/FPX_B2B_BIMB.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_BKRM ? "'FPX B2B i-bizRAKYAT': { value: 'FPX_B2B_BKRM', image: '".plugins_url('images/FPX_B2B_BKRM.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_BMMB ? "'FPX B2B Bank Muamalat': { value: 'FPX_B2B_BMMB', image: '".plugins_url('images/FPX_B2B_BMMB.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_CIMB ? "'FPX B2B BizChannel@CIMB': { value: 'FPX_B2B_CIMB', image: '".plugins_url('images/FPX_B2B_CIMB.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_BNP ? "'FPX B2B BNP Paribas': { value: 'FPX_B2B_BNP', image: '".plugins_url('images/FPX_B2B_BNP.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_CITIBANK ? "'FPX B2B CITIBANK': { value: 'FPX_B2B_CITIBANK', image: '".plugins_url('images/FPX_B2B_CITIBANK.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_DEUTSCHE ? "'FPX B2B Deutsche Bank': { value: 'FPX_B2B_DEUTSCHE', image: '".plugins_url('images/FPX_B2B_DEUTSCHE.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_HLB ? "'FPX B2B Hong Leong Connect': { value: 'FPX_B2B_HLB', image: '".plugins_url('images/FPX_B2B_HLB.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_HSBC ? "'FPX B2B HSBC': { value: 'FPX_B2B_HSBC', image: '".plugins_url('images/FPX_B2B_HSBC.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_KFH ? "'FPX B2B Kuwait Finance House Overseas Bank': { value: 'FPX_B2B_KFH', image: '".plugins_url('images/FPX_B2B_KFH.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_OCBC ? "'FPX B2B OCBC Bank': { value: 'FPX_B2B_OCBC', image: '".plugins_url('images/FPX_B2B_OCBC.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_PBB ? "'FPX B2B Public Bank': { value: 'FPX_B2B_PBB', image: '".plugins_url('images/FPX_B2B_PBB.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_PBBE ? "'FPX B2B Public Bank Enterprise': { value: 'FPX_B2B_PBBE', image: '".plugins_url('images/FPX_B2B_PBBE.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_RHB ? "'FPX B2B RHB Reflex': { value: 'FPX_B2B_RHB', image: '".plugins_url('images/FPX_B2B_RHB.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_SCB ? "'FPX B2B Standard Chartered Bank': { value: 'FPX_B2B_SCB', image: '".plugins_url('images/FPX_B2B_SCB.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_UOB ? "'FPX B2B United Overseas Bank': { value: 'FPX_B2B_UOB', image: '".plugins_url('images/FPX_B2B_UOB.png', __FILE__)."' }," : '') . "
+                           " . ($this->FPX_B2B_UOBR ? "'FPX B2B UOB Regional': { value: 'FPX_B2B_UOBR', image: '".plugins_url('images/FPX_B2B_UOBR.png', __FILE__)."' }," : '') . "
+                        },
+                        'qr-ewallet' : {
+                           " . ($this->alipay ? "'Alipay': { value: 'alipay', image: '".plugins_url('images/alipay.png', __FILE__)."' }," : '') . "
+                           " . ($this->BOOST ? "'Boost': { value: 'BOOST', image: '".plugins_url('images/boost.png', __FILE__)."' }," : '') . "
+                           " . ($this->Crypto_tripleA ? "'Crypto tripleA': { value: 'Crypto_tripleA', image: '".plugins_url('images/Crypto_tripleA.png', __FILE__)."' }," : '') . "
+                           " . ($this->RazerPay ? "'Fiuu Pay': { value: 'RazerPay', image: '".plugins_url('images/razerpay.png', __FILE__)."' }," : '') . "
+                           " . ($this->GrabPay ? "'Grab Pay': { value: 'GrabPay', image: '".plugins_url('images/grabpay.png', __FILE__)."' }," : '') . "
+                           " . ($this->MB2U_QRPay_Push ? "'Maybank QR': { value: 'MB2U_QRPay-Push', image: '".plugins_url('images/maybankQR.png', __FILE__)."' }," : '') . "
+                           " . ($this->PayNow ? "'PayNow': { value: 'PayNow', image: '".plugins_url('images/PayNow.png', __FILE__)."' }," : '') . "
+                           " . ($this->Point_BCard ? "'Point BCard': { value: 'Point-BCard', image: '".plugins_url('images/Point-BCard.png', __FILE__)."' }," : '') . "
+                           " . ($this->ShopeePay ? "'Shopee Pay': { value: 'ShopeePay', image: '".plugins_url('images/shopeepay_2.png', __FILE__)."' }," : '') . "
+                           " . ($this->TNG_EWALLET ? "'Touch `n Go eWallet': { value: 'TNG-EWALLET', image: '".plugins_url('images/touchngo_ewallet.png', __FILE__)."' }," : '') . "
+                           " . ($this->WeChatPay ? "'WeChatPay Cross Border': { value: 'WeChatPay', image: '".plugins_url('images/WeChatPay.png', __FILE__)."' }," : '') . "
+                           " . ($this->WeChatPayMY ? "'WeChatPayMY': { value: 'WeChatPayMY', image: '".plugins_url('images/wechatpay_my.png', __FILE__)."' }," : '') . "
+                        },
+                        'cash-payment' : {
+                           " . ($this->cash_711 ? "'7-Eleven': { value: 'cash-711', image: '".plugins_url('images/cash-711.png', __FILE__)."' }," : '') . "
+                           " . ($this->BigC ? "'BigC': { value: 'BigC', image: '".plugins_url('images/BigC.png', __FILE__)."' }," : '') . "
+                           " . ($this->singpost ? "'Cash-SAM': { value: 'singpost', image: '".plugins_url('images/singpost.png', __FILE__)."' }," : '') . "
+                           " . ($this->ESUN_ATM ? "'ESUN ATM': { value: 'ESUN_ATM', image: '".plugins_url('images/ESUN-ATM.png', __FILE__)."' }," : '') . "
+                           " . ($this->ESUN_Cash711 ? "'ESUN Cash711': { value: 'ESUN_Cash711', image: '".plugins_url('images/ESUN-Cash-711.png', __FILE__)."' }," : '') . "
+                           " . ($this->ESUN_CashFamilyMart ? "'ESUN Cash FamilyMart': { value: 'ESUN_CashFamilyMart', image: '".plugins_url('images/ESUN-Cash-FamilyMart.png', __FILE__)."' }," : '') . "
+                           " . ($this->ESUN_CashHiLife ? "'ESUN CashHiLife': { value: 'ESUN_CashHiLife', image: '".plugins_url('images/ESUN-CashHiLife.png', __FILE__)."' }," : '') . "
+                           " . ($this->OMISE_TL ? "'Tesco Lotus via OMISE': { value: 'OMISE_TL', image: '".plugins_url('images/OMISE_TL.png', __FILE__)."' }," : '') . "
+                           " . ($this->ATMVA ? "'ATM Transfer via Permata Bank': { value: 'ATMVA', image: '".plugins_url('images/ATMVA.png', __FILE__)."' }," : '') . "
+
+                        },
+                        'bnpl' : {
+                           " . ($this->Atome ? "'Atome': { value: 'Atome', image: '".plugins_url('images/Atome.png', __FILE__)."' }," : '') . "
+                           " . ($this->IOUPay_PW ? "'IOUPay': { value: 'IOUPay-PW', image: '".plugins_url('images/IOUPay-PW.png', __FILE__)."' }," : '') . "
+
+                        },
+
+
+                    };
+
+            
+                    jQuery('.category-btn').on('click', function() {
+                        var selectedCategory = jQuery(this).data('category');
+                        var dropdownList = jQuery('#dropdown-list');
+                        dropdownList.empty();
+                        jQuery('#dropdown-button').text('Select payment method');
+            
+                        if (paymentOptions[selectedCategory]) {
+                            jQuery.each(paymentOptions[selectedCategory], function(name, data) {
+                                dropdownList.append(
+                                    `<div class='dropdown-item' data-value='`+data.value+`' style='padding: 10px; cursor: pointer; display: flex; align-items: center; font-size:16px;'> 
+                                        <img src='`+data.image+`' style='margin-right:10px; width:100px; height::100px;'> `+name+`
+                                    </div>`                               );
+                            });
+                        }
+                        
+                        jQuery('.category-btn').css('border-color', '#707070'); 
+                        jQuery(this).css('border-color', '#44d62c'); 
+                    });
+            
+                    // Show/hide dropdown on button click
+                    jQuery('#dropdown-button').on('click', function() {
+                        jQuery('#dropdown-list').toggle();
+                    });
+            
+                    // Hide dropdown when clicking outside
+                    jQuery(document).on('click', function(event) {
+                        if (!jQuery(event.target).closest('#custom-dropdown').length) {
+                            jQuery('#dropdown-list').hide();
+                        }
+                    });
+            
+                    // Handle selection from the dropdown
+                    jQuery('#dropdown-list').on('click', '.dropdown-item', function() {
+                        var selectedMethod = jQuery(this).data('value');
+                        jQuery('#dropdown-button').html(jQuery(this).html()); // Update button with selected value
+                        jQuery('#dropdown-list').hide(); // Close dropdown after selection
+            
+                        var merchantID = '" . $this->merchant_id . "';
+                        var orderID = '" . $order_number . "';
+                        var bill_name = '" . $order->get_billing_first_name() . " " . $order->get_billing_last_name() . "';
+                        var bill_email = '" . $order->get_billing_email() . "';
+                        var bill_mobile = '" . $order->get_billing_phone() . "';
+                        var bill_desc = '" . $desc . "';
+                        var currency = '" . get_woocommerce_currency() . "';
+                        var amt = '" . $total . "';
+                        var vcode = '" . $vcode . "';
+                        var returnUrl = '" . $mpsreturn . "';
+                        var country = '" . $order->get_billing_country() . "';
+                        var cctype = '" . $this->credit_tcctype . "';
+            
+                        var append_data = `data-mpsmerchantid=\"`+merchantID+`\" data-mpschannel=\"`+selectedMethod+`\" 
+                                           data-mpsamount=\"`+amt+`\" data-mpstcctype=\"`+cctype+`\" data-mpsorderid=\"`+orderID+`\" data-mpsbill_name=\"`+bill_name+`\" 
+                                           data-mpsbill_email=\"`+bill_email+`\" data-mpsbill_mobile=\"`+bill_mobile+`\" 
+                                           data-mpsbill_desc=\"`+bill_desc+`\" data-mpscurrency=\"`+currency+`\" data-mpsvcode=\"`+vcode+`\" 
+                                           data-mpsreturnurl=\"`+returnUrl+`\" data-mpscountry=\"`+country+`\" `;
+            
+                        jQuery('#div_generatedSingleBtn').html(
+                            `<button type=\"button\" data-toggle=\"molpayseamless\" `+append_data+` 
+                                class=\"btn btn-success btn-lg\" style='width:200px; background-color:#44d62c; font-size:20px; padding:10px; border-radius:5px; border:none;'>Pay</button>`
+                        );
+                    });
+                });
+            </script>"
+                . "</form>";
         }
         
 
