@@ -1,6 +1,19 @@
 <?php
 class WC_Molpay_Gateway extends WC_Payment_Gateway
 {
+    public $title;
+    public $ordering_plugin;
+    public $payment_title;
+    public $description;
+    public $merchant_id;
+    public $verify_key;
+    public $secret_key;
+    public $account_type;
+    public $recurring;
+    public $extend_vcode;
+    public $url;
+    public $inquiry_url;
+    public $payment_titles;
 
     // Constructor method
     public function __construct()
@@ -27,12 +40,12 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
         $this->verify_key = $this->settings['verify_key'];
         $this->secret_key = $this->settings['secret_key'];
         $this->account_type = $this->settings['account_type'];
-        $this->recurring = $this->settings['recurring'];
-        $this->extend_vcode = $this->settings['extend_vcode'];
+        $this->recurring = $this->settings['recurring'] ?? ''; 
+        $this->extend_vcode = $this->settings['extend_vcode'] ?? '';
 
         // Define hostname based on account_type
-        $this->url = ($this->get_option('account_type') == '1') ? "https://pay.fiuu.com/" : "https://sandbox.merchant.razer.com/";
-        $this->inquiry_url = ($this->get_option('account_type') == '1') ? "https://api.fiuu.com/" : "https://sandbox.merchant.razer.com/";
+        $this->url = ($this->get_option('account_type') == '1') ? "https://pay.fiuu.com/" : "https://sandbox-payment.fiuu.com/";
+        $this->inquiry_url = ($this->get_option('account_type') == '1') ? "https://api.fiuu.com/" : "https://sandbox-api.fiuu.com/";
 
         // Actions.
         add_action('valid_molpay_request_returnurl', array(&$this, 'check_molpay_response_returnurl'));
@@ -779,7 +792,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
             $extraP_arr = json_decode(stripslashes($_POST['extraP']), 1);
             $order->add_order_note('Fiuu Payment Status: ' . $M_status . '<br>Transaction ID: ' . $tranID . $referer . ' extraP: ' . json_encode($extraP_arr));
 
-            if (!empty($extraP)) {
+            if (!empty($extraP) && is_array($extraP_arr)) {
                 foreach ($extraP_arr as $key => $value) {
                     $order->update_meta_data('_' . $key, $value);
                 }
@@ -831,7 +844,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
      */
     public function acknowledgeResponse($response)
     {
-        if ($response['nbcb'] == '1') {
+        if ($isset($response['nbcb']) && response['nbcb'] == '1') {
             echo "CBTOKEN:MPSTATOK";
             exit;
         } else {
