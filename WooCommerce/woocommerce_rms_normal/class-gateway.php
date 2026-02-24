@@ -390,7 +390,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 $customer_id = $this->create_woocommerce_customer($billing_name, $billing_email, $billing_mobile);
                 $this->create_woocommerce_order($customer_id, $_POST['orderid'], $_POST['amount'], $billing_name, '', $billing_email);
             } else {
-                wp_die("Missing extraP value - recurring");
+                wp_die("Missing token - recurring");
             }
         }
 
@@ -451,7 +451,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 $customer_id = $this->create_woocommerce_customer($billing_name, $billing_email, $billing_mobile);
                 $this->create_woocommerce_order($customer_id, $_POST['orderid'], $_POST['amount'], $billing_name, '', $billing_email);
             } else {
-                wp_die("Missing extraP value - recurring");
+                wp_die("Missing token - recurring");
             }
         }
 
@@ -496,7 +496,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 $customer_id = $this->create_woocommerce_customer($billing_name, $billing_email, $billing_mobile);
                 $this->create_woocommerce_order($customer_id, $_POST['orderid'], $_POST['amount'], $billing_name, '', $billing_email);
             } else {
-                wp_die("Missing extraP value - recurring");
+                wp_die("Missing token - recurring");
             }
         }
 
