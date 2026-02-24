@@ -14,6 +14,8 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
     public $url;
     public $inquiry_url;
     public $payment_titles;
+    protected $logger;
+    protected $log_context;
 
     // Constructor method
     public function __construct()
@@ -46,6 +48,10 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
         // Define hostname based on account_type
         $this->url = ($this->get_option('account_type') == '1') ? "https://pay.fiuu.com/" : "https://sandbox-payment.fiuu.com/";
         $this->inquiry_url = ($this->get_option('account_type') == '1') ? "https://api.fiuu.com/" : "https://sandbox-api.fiuu.com/";
+
+        // Logger
+        $this->logger = wc_get_logger();
+        $this->log_context = ['source' => $this->id];
 
         // Actions.
         add_action('valid_molpay_request_returnurl', array(&$this, 'check_molpay_response_returnurl'));
@@ -355,7 +361,9 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
         } else if ($_POST['nbcb'] == '2') {
             do_action("valid_molpay_request_notification", $_POST);
         } else {
-            wp_die("Fiuu Request Failure");
+            $error_message = "Fiuu Request Failure";
+            $this->logger->error($error_message, $this->log_context);
+            wp_die($error_message);
         }
     }
 
@@ -391,11 +399,12 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 $this->create_woocommerce_order($customer_id, $_POST['orderid'], $_POST['amount'], $billing_name, '', $billing_email);
             }
         }
-
         $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
 
         if (empty($WCOrderId)) {
-            wp_die("Order not found");
+            $error_message = "Order not foundwww";
+            $this->logger->error($error_message, $this->log_context);
+            wp_die($error_message);
         }
 
         $order = new WC_Order($WCOrderId);
@@ -449,7 +458,9 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 $customer_id = $this->create_woocommerce_customer($billing_name, $billing_email, $billing_mobile);
                 $this->create_woocommerce_order($customer_id, $_POST['orderid'], $_POST['amount'], $billing_name, '', $billing_email);
             } else {
-                wp_die("Missing token - recurring");
+                $error_message = "Missing token - recurring";
+                $this->logger->error($error_message, $this->log_context);
+                wp_die($error_message);
             }
         }
 
@@ -490,15 +501,13 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 $customer_id = $this->create_woocommerce_customer($billing_name, $billing_email, $billing_mobile);
                 $this->create_woocommerce_order($customer_id, $_POST['orderid'], $_POST['amount'], $billing_name, '', $billing_email);
             } else {
-                wp_die("Missing token - recurring");
+                $error_message = "Missing token - recurring";
+                $this->logger->error($error_message, $this->log_context);
+                wp_die($error_message);
             }
         }
 
         $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
-
-        if (empty($WCOrderId)) {
-            wp_die("Order not found");
-        }
 
         $referer = "<br>Referer: CallbackURL";
         $this->update_Cart_by_Status($WCOrderId, $status, $_POST['tranID'], $referer, $_POST['channel'], $extraP);
