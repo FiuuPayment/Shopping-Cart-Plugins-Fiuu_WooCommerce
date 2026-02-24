@@ -389,8 +389,11 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 $billing_mobile = $data['billing_mobile'];
                 $customer_id = $this->create_woocommerce_customer($billing_name, $billing_email, $billing_mobile);
                 $this->create_woocommerce_order($customer_id, $_POST['orderid'], $_POST['amount'], $billing_name, '', $billing_email);
+            } else {
+                wp_die("Missing extraP value - recurring");
             }
         }
+
         $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
 
         if (empty($WCOrderId)) {
@@ -448,10 +451,15 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 $customer_id = $this->create_woocommerce_customer($billing_name, $billing_email, $billing_mobile);
                 $this->create_woocommerce_order($customer_id, $_POST['orderid'], $_POST['amount'], $billing_name, '', $billing_email);
             } else {
-                wp_die("Order not found");
+                wp_die("Missing extraP value - recurring");
             }
         }
+
         $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
+        
+        if (empty($WCOrderId)) {
+            wp_die("Order not found");
+        }
 
         $referer = "<br>Referer: NotificationURL";
         $this->update_Cart_by_Status($WCOrderId, $status, $_POST['tranID'], $referer, $_POST['channel'], $extraP);
@@ -488,10 +496,15 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 $customer_id = $this->create_woocommerce_customer($billing_name, $billing_email, $billing_mobile);
                 $this->create_woocommerce_order($customer_id, $_POST['orderid'], $_POST['amount'], $billing_name, '', $billing_email);
             } else {
-                wp_die("Order not found");
+                wp_die("Missing extraP value - recurring");
             }
         }
+
         $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
+
+        if (empty($WCOrderId)) {
+            wp_die("Order not found");
+        }
 
         $referer = "<br>Referer: CallbackURL";
         $this->update_Cart_by_Status($WCOrderId, $status, $_POST['tranID'], $referer, $_POST['channel'], $extraP);
