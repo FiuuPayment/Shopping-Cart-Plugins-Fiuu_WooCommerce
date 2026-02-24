@@ -402,7 +402,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
         $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
 
         if (empty($WCOrderId)) {
-            $error_message = "Order not foundwww";
+            $error_message = "Order not found";
             $this->logger->error($error_message, $this->log_context);
             wp_die($error_message);
         }
