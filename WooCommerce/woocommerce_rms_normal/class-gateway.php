@@ -394,8 +394,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
         $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
 
         if (empty($WCOrderId)) {
-            echo "Order not found";
-            exit;
+            wp_die("Order not found");
         }
 
         $order = new WC_Order($WCOrderId);
@@ -449,8 +448,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 $customer_id = $this->create_woocommerce_customer($billing_name, $billing_email, $billing_mobile);
                 $this->create_woocommerce_order($customer_id, $_POST['orderid'], $_POST['amount'], $billing_name, '', $billing_email);
             } else {
-                echo "Order not found";
-                exit;
+                wp_die("Order not found");
             }
         }
         $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
@@ -490,8 +488,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 $customer_id = $this->create_woocommerce_customer($billing_name, $billing_email, $billing_mobile);
                 $this->create_woocommerce_order($customer_id, $_POST['orderid'], $_POST['amount'], $billing_name, '', $billing_email);
             } else {
-                echo "Order not found";
-                exit;
+                wp_die("Order not found");
             }
         }
         $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
