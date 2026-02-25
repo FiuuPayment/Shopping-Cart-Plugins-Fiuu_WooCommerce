@@ -20,7 +20,7 @@ assistance, please email support@fiuu.com.
 
 Installations Guidance for Wordpress Plugin 
 -----------------------------
-[ClassiPress Version	3.2.1](https://github.com/RazerMS/WordPress_WooCommerce_WP-eCommerce_ClassiPress/wiki/Installation-for-Classipress-Plugins)
+[ClassiPress Version 3.2.1](https://github.com/FiuuPayment/Shopping-Cart-Plugins-Fiuu_WooCommerce/wiki/Installation-for-ClassiPress-Plugins)
 
 [WooCommerce](https://github.com/FiuuPayment/Shopping-Cart-Plugins-Fiuu_WooCommerce/wiki/Installation-for-WooCommerce-Plugins)
 
@@ -28,7 +28,7 @@ Installations Guidance for Wordpress Plugin
 Changelog
 ------------
 
-[Woocommerce RMS Seamless](https://github.com/RazerMS/Shopping-Cart-Plugins-RazerMS_WooCommerce/tree/master/WooCommerce/woocommerce_rms_seamless) v5.3.1 - Sep 7, 2021
+[Woocommerce RMS Seamless](https://github.com/FiuuPayment/Shopping-Cart-Plugins-Fiuu_WooCommerce/releases/tag/v3.2.1) v3.2.1 - Feb 25, 2026
 
 
 Contribution
