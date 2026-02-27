@@ -70,6 +70,9 @@ function wcmolpay_gateway_load() {
      */
     class WC_Molpay_Gateway extends WC_Payment_Gateway {
 
+       protected $logger;
+        protected $log_context;
+    
         /**
          * Construct the Razer Merchant Services gateway class
          * 
@@ -142,6 +145,10 @@ function wcmolpay_gateway_load() {
             // Transaction Type for Credit Channel
             $this->credit_tcctype = ($this->get_option('credit_tcctype')=='SALS' ? 'SALS' : 'AUTH');
             
+            // Logger
+            $this->logger = wc_get_logger();
+            $this->log_context = ['source' => $this->id];
+
             // Actions.
             add_action( 'valid_molpay_request_returnurl', array( &$this, 'check_molpay_response_returnurl' ) );
             add_action( 'valid_molpay_request_callback', array( &$this, 'check_molpay_response_callback' ) );
@@ -619,7 +626,9 @@ function wcmolpay_gateway_load() {
             } else if ( $_POST['nbcb']=='2' ) {
                 do_action ( "valid_molpay_request_notification", $_POST );
             } else {
-                wp_die( "Razer Merchant Services Request Failure" );
+                $error_message = "Razer Merchant Services Request Failure";
+                $this->logger->error($error_message, $this->log_context);
+                wp_die($error_message);
             }
         }
         
