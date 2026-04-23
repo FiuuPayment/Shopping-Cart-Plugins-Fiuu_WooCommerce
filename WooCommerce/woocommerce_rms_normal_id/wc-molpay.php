@@ -153,7 +153,8 @@ function wcmolpay_gateway_load() {
                 'e2Pay_CIMB_VA'                 => "e2Pay_CIMB_VA",
                 'e2Pay_BCA_VA'                  => "e2Pay_BCA_VA",
                 'e2Pay_BRI_VA'                  => "e2Pay_BRI_VA",
-                'e2Pay_MANDIRI_VA'              => "e2Pay_MANDIRI_VA");
+                'e2Pay_MANDIRI_VA'              => "e2Pay_MANDIRI_VA",
+                'BRI'                           => "BRI");
         }
 
         /**

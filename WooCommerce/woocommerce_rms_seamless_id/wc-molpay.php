@@ -124,6 +124,7 @@ function wcmolpay_gateway_load() {
             $this->e2Pay_BCA_VA = ($this->get_option('e2Pay_BCA_VA')=='yes' ? true : false);
             $this->e2Pay_BRI_VA = ($this->get_option('e2Pay_BRI_VA')=='yes' ? true : false);
             $this->e2Pay_MANDIRI_VA = ($this->get_option('e2Pay_MANDIRI_VA')=='yes' ? true : false);
+            $this->BRI = ($this->get_option('BRI')=='yes' ? true : false);
 
             // Transaction Type for Credit Channel
             $this->credit_tcctype = ($this->get_option('credit_tcctype')=='SALS' ? 'SALS' : 'AUTH');
@@ -362,6 +363,12 @@ function wcmolpay_gateway_load() {
                     'label' => __( ' ', 'wcmolpay' ),
                     'default' => 'no'                
                 ),
+                'BRI' => array(
+                    'title' => __( 'BRI CC', 'wcmolpay' ),
+                    'type' => 'checkbox',
+                    'label' => __( ' ', 'wcmolpay' ),
+                    'default' => 'no'                
+                ),
                 'tcctype' => array(
                     'title'         => 'Transaction Type for Credit Card / Debit Card Channel',
                     'type'          => 'title',
@@ -456,6 +463,7 @@ function wcmolpay_gateway_load() {
                     .($this->e2Pay_CIMB_VA ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='e2Pay_CIMB_VA' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/CIMB_VA.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
                     .($this->e2Pay_BCA_VA ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='e2Pay_BCA_VA' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/BCA.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
                     .($this->e2Pay_BRI_VA ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='e2Pay_BRI_VA' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/BRI.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
+                    .($this->BRI ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='credit24' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/BRI.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
                     . "</form>";
         }
         
