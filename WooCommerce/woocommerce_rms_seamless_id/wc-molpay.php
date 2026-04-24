@@ -9,7 +9,7 @@
  */
 
 /**
- * Plugin Name: WooCommerce Fiuu Seamless
+ * Plugin Name: WooCommerce Fiuu Services Seamless
  * Plugin URI: https://github.com/FiuuPayment/Shopping-Cart-Plugins-Fiuu_WooCommerce
  * Description: WooCommerce Fiuu | The leading payment gateway in South East Asia Grow your business with Fiuu Services payment solutions & free features: Physical Payment at 7-Eleven, Seamless Checkout, Tokenization, Loyalty Program and more for WooCommerce
  * Author: Fiuu Services Tech Team
