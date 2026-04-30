@@ -521,8 +521,7 @@ function wcmolpay_gateway_load() {
             
             $mpsreturn = add_query_arg( 'wc-api', 'WC_Molpay_Gateway', home_url( '/' ));
             $latest = ($this->get_option('account_type')=='1') ? "3.28" : "latest" ;
-            return "<form action='".$pay_url."/' method='post' id='molpay_payment_form' name='molpay_payment_form'  
-                    onsubmit='if(document.getElementById(\"agree\").checked) { return true; } else { alert(\"Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy\"); return false; }'>"
+            return "<form action='".$pay_url."/' method='post' id='molpay_payment_form' name='molpay_payment_form'>"
                     
                     // . implode('', $molpay_args_array)
                     
@@ -545,7 +544,7 @@ function wcmolpay_gateway_load() {
                     // E-Wallet
                     . ($this->e2Pay_DANA || $this->e2Pay_LINKAJA_APPLINK || $this->e2Pay_LINKAJA_WCO || $this->e2Pay_SHOPEEPAY_JUMPAPP || $this->e2Pay_OVO || $this->e2Pay_GOPAY || $this->e2Pay_CIMB_OctoPay || $this->e2Pay_Alipay_QR || $this->e2Pay_WeChatPay_QR ? "<button type='button' class='category-btn' style='background:white; border-radius:5px; border:2px solid gray; outline:none ;' data-category='ewallet'><img src='".plugins_url('images/ewallet.png', __FILE__)."' width='100%'/></button>" : '')
                     // QRIS
-                    . ($this->e2Pay_CIMB_QRIS || $this->e2Pay_MBayar_QR || $this->e2Pay_SHOPEEPAY_QRIS ? "<button type='button' class='category-btn' style='background:white; border-radius:5px; border:2px solid gray; outline:none ;' data-category='qris'><img src='".plugins_url('images/ewallet.png', __FILE__)."' width='100%'/></button>" : '')
+                    . ($this->e2Pay_CIMB_QRIS || $this->e2Pay_MBayar_QR || $this->e2Pay_SHOPEEPAY_QRIS ? "<button type='button' class='category-btn' style='background:white; border-radius:5px; border:2px solid gray; outline:none ;' data-category='qris'><img src='".plugins_url('images/qris.png', __FILE__)."' width='100%'/></button>" : '')
                     // VA
                     . ($this->e2Pay_PERMATA_VA || $this->e2Pay_BNI_VA || $this->e2Pay_CIMB_VA || $this->e2Pay_BCA_VA || $this->e2Pay_BRI_VA || $this->e2Pay_MANDIRI_VA || $this->e2Pay_BSI_VA ? "<button type='button' class='category-btn' style='background:white; border-radius:5px; border:2px solid gray; outline:none;' data-category='virtual-account'><img src='".plugins_url('images/virtual-account.png', __FILE__)."' width='100%'/></button>" : '')              
                     // Convenience Store, set to false since noting is ready yet for ID
@@ -573,12 +572,14 @@ function wcmolpay_gateway_load() {
                     . "</label>"
             
                     . "<div id='div_generatedSingleBtn'>"
-                        . "<button id='pay-button' type='button' class='btn btn-success btn-lg' style='width:200px; background-color:#44d62c; font-size:20px; padding:10px; border-radius:5px; border:none; margin-bottom:30px;'>Pay</button>"
+                        . "<button id='pay-button' type='submit' class='btn btn-success btn-lg' style='width:200px; background-color:#44d62c; font-size:20px; padding:10px; border-radius:5px; border:none; margin-bottom:30px;'>Pay</button>"
                     . "</div>"
 
                     // jQuery
                     . "<script>
+                const el = jQuery('#pay-button');
                 jQuery(document).ready(function() {
+                    API_HOST = '".$this->url."';
                     var paymentOptions = {
                         'card': {
                            " . ($this->CIMB_NIAGA ? "'CIMB NIAGA': { value: 'credit21', image: '".plugins_url('images/CIMBNiaga.png', __FILE__)."' }," : '') . "
@@ -601,22 +602,22 @@ function wcmolpay_gateway_load() {
                            " . ($this->e2Pay_OVO ? "'OVO': { value: 'e2Pay_OVO', image: '".plugins_url('images/OVO.png', __FILE__)."' }," : '') . "
                            " . ($this->e2Pay_GOPAY ? "'GOPAY': { value: 'e2Pay_GOPAY', image: '".plugins_url('images/GOPAY.png', __FILE__)."' }," : '') . "
                            " . ($this->e2Pay_CIMB_OctoPay ? "'CIMB OctoPay': { value: 'e2Pay_CIMB_OctoPay', image: '".plugins_url('images/CIMBOctoClicks.png', __FILE__)."' }," : '') . "
-                           " . ($this->e2Pay_Alipay_QR ? "'Alipay QR': { value: 'e2Pay_Alipay_QR', image: '".plugins_url('images/Alipay.png', __FILE__)."' }," : '') . "
+                           " . ($this->e2Pay_Alipay_QR ? "'Alipay QR': { value: 'e2Pay_Alipay_QR', image: '".plugins_url('images/ALIPAY.png', __FILE__)."' }," : '') . "
                            " . ($this->e2Pay_WeChatPay_QR ? "'DANA': { value: 'e2Pay_WeChatPay_QR', image: '".plugins_url('images/WeChatPay.png', __FILE__)."' }," : '') . "
                         },
                         'qris' : {
-                           " . ($this->e2Pay_CIMB_QRIS ? "'CIMB QRIS': { value: 'e2Pay_CIMB_QRIS', image: '".plugins_url('images/CIMB.png', __FILE__)."' }," : '') . "
+                           " . ($this->e2Pay_CIMB_QRIS ? "'CIMB QRIS': { value: 'e2Pay_CIMB_QRIS', image: '".plugins_url('images/CIMBClicks.png', __FILE__)."' }," : '') . "
                            " . ($this->e2Pay_MBayar_QR ? "'MBayar QRIS': { value: 'e2Pay_MBayar_QR', image: '".plugins_url('images/MBAYAR.png', __FILE__)."' }," : '') . "
                            " . ($this->e2Pay_SHOPEEPAY_QRIS ? "'ShopeePay QRIS': { value: 'e2Pay_SHOPEEPAY_QRIS', image: '".plugins_url('images/SHOPEEPAY.png', __FILE__)."' }," : '') . "
                         },
                         'virtual-account' : {
                            " . ($this->e2Pay_PERMATA_VA ? "'Permata Virtual Account': { value: 'e2Pay_PERMATA_VA', image: '".plugins_url('images/Permata.png', __FILE__)."' }," : '') . "
                            " . ($this->e2Pay_BNI_VA ? "'BNI Virtual Account': { value: 'e2Pay_BNI_VA', image: '".plugins_url('images/BNI.png', __FILE__)."' }," : '') . "
-                           " . ($this->e2Pay_CIMB_VA ? "'CIMB Virtual Account': { value: 'e2Pay_CIMB_VA', image: '".plugins_url('images/CIMB.png', __FILE__)."' }," : '') . "
+                           " . ($this->e2Pay_CIMB_VA ? "'CIMB Virtual Account': { value: 'e2Pay_CIMB_VA', image: '".plugins_url('images/CIMB_VA.png', __FILE__)."' }," : '') . "
                            " . ($this->e2Pay_BCA_VA ? "'BCA Virtual Account': { value: 'e2Pay_BCA_VA', image: '".plugins_url('images/BCA.png', __FILE__)."' }," : '') . "
                            " . ($this->e2Pay_BRI_VA ? "'BRI Virtual Account': { value: 'e2Pay_BRI_VA', image: '".plugins_url('images/BRI.png', __FILE__)."' }," : '') . "
                            " . ($this->e2Pay_MANDIRI_VA ? "'Mandiri Virtual Account': { value: 'e2Pay_MANDIRI_VA', image: '".plugins_url('images/mandiri.png', __FILE__)."' }," : '') . "
-                           " . ($this->e2Pay_BSI_VA ? "'Alipay': { value: 'e2Pay_BSI_VA', image: '".plugins_url('images/BSI.png', __FILE__)."' }," : '') . "
+                           " . ($this->e2Pay_BSI_VA ? "'BSI Virtual Account': { value: 'e2Pay_BSI_VA', image: '".plugins_url('images/BSI.png', __FILE__)."' }," : '') . "
                         },
                         'convenience-store' : {
                            " . ($this->e2Pay_Indomaret ? "'Indomaret': { value: 'e2Pay_Indomaret', image: '".plugins_url('images/Indomaret.png', __FILE__)."' }," : '') . "
@@ -636,6 +637,7 @@ function wcmolpay_gateway_load() {
                         var selectedCategory = jQuery(this).data('category');
                         var dropdownList = jQuery('#dropdown-list');
                         dropdownList.empty();
+                        clearAttrData(el);
                         jQuery('#dropdown-button').text('Select payment method');
             
                         if (paymentOptions[selectedCategory]) {
@@ -649,6 +651,7 @@ function wcmolpay_gateway_load() {
                         
                         jQuery('.category-btn').css('border-color', '#707070'); 
                         jQuery(this).css('border-color', '#44d62c'); 
+                        jQuery()
                     });
             
                     // Show/hide dropdown on button click
@@ -660,6 +663,20 @@ function wcmolpay_gateway_load() {
                     jQuery(document).on('click', function(event) {
                         if (!jQuery(event.target).closest('#custom-dropdown').length) {
                             jQuery('#dropdown-list').hide();
+                        }
+                    });
+
+                    // Handle Pay Button Clicked/Submit
+                    jQuery('#pay-button').on('click', function(e) {
+                        if (!jQuery(this).is('[data-toggle]')) {
+                            if (!jQuery('#agree').is(':checked')) {
+                                e.preventDefault();
+                                alert('Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy');
+                                return;
+                            } else {
+                                el.attr('data-toggle','molpayseamless');
+                                el.click();
+                            }
                         }
                     });
             
@@ -681,45 +698,39 @@ function wcmolpay_gateway_load() {
                         var returnUrl = '" . $mpsreturn . "';
                         var country = '" . $order->get_billing_country() . "';
                         var cctype = '" . $this->credit_tcctype . "';
-            
-                        var append_data = `data-mpsmerchantid=\"`+merchantID+`\" data-mpschannel=\"`+selectedMethod+`\" 
-                                           data-mpsamount=\"`+amt+`\" data-mpstcctype=\"`+cctype+`\" data-mpsorderid=\"`+orderID+`\" data-mpsbill_name=\"`+bill_name+`\" 
-                                           data-mpsbill_email=\"`+bill_email+`\" data-mpsbill_mobile=\"`+bill_mobile+`\" 
-                                           data-mpsbill_desc=\"`+bill_desc+`\" data-mpscurrency=\"`+currency+`\" data-mpsvcode=\"`+vcode+`\" 
-                                           data-mpsreturnurl=\"`+returnUrl+`\" data-mpscountry=\"`+country+`\" `;
-            
-                        jQuery('#div_generatedSingleBtn').html(
-                            `<button type=\"button\" data-toggle=\"molpayseamless\" `+append_data+` 
-                                class=\"btn btn-success btn-lg\" style='width:200px; background-color:#44d62c; font-size:20px; padding:10px; border-radius:5px; border:none;'>Pay</button>`
-                        );
-                    });
-                });
-            </script>"
+                        
+                        clearAttrData(el);
 
-                    // Old Layout
-                    /*."<h3><u>Pay via</u>:</h3><img src='".plugins_url( 'images/logo_Fiuu.png', __FILE__ )."' width='200px'>"
-                    ."<br/>"
-                    ."<br/>"
-                    ." <input type='checkbox' name='checkbox' value='check' id='agree' /> I have read and agree to the <b> Terms & Conditions, Refund Policy</b> and <b>Privacy Policy</b>."
-                    ."<br/>"
-                    ."<br/>"                    
-                    .($this->e2Pay_DANA ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='e2Pay_DANA' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/DANA.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
-                    .($this->e2Pay_LINKAJA_APPLINK ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='e2Pay_LINKAJA_APPLINK' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/LINKAJA.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
-                    .($this->e2Pay_CIMB_OCTO_MOBILE ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='e2Pay_CIMB_OCTO_MOBILE' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/CIMBOctoClicks.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
-                    .($this->e2Pay_SHOPEEPAY_JUMPAPP ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='e2Pay_SHOPEEPAY_JUMPAPP' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/SHOPEEPAY.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
-                    .($this->e2Pay_OVO ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='e2Pay_OVO' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/OVO.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
-                    .($this->e2Pay_NUCash ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='e2Pay_NUCash' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/NUCash.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
-                    .($this->e2Pay_CIMBOctoClicks_IB ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='e2Pay_CIMBOctoClicks_IB' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/CIMBOctoClicks.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
-                    .($this->e2Pay_Kredivo_FN ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='e2Pay_Kredivo_FN' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/kredivo.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
-                    .($this->CIMB_NIAGA ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='credit21' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/CIMBNiaga.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
-                    .($this->e2Pay_CIMB_Rekening_Ponsel ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='e2Pay_CIMB_Rekening_Ponsel' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/CIMB_Rekening_Ponsel.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
-                    .($this->e2Pay_PERMATA_VA ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='e2Pay_PERMATA_VA' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/Permata.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
-                    .($this->e2Pay_BNI_VA ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='e2Pay_BNI_VA' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/BNI.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
-                    .($this->e2Pay_CIMB_VA ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='e2Pay_CIMB_VA' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/CIMB_VA.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
-                    .($this->e2Pay_BCA_VA ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='e2Pay_BCA_VA' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/BCA.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
-                    .($this->e2Pay_BRI_VA ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='e2Pay_BRI_VA' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/BRI.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')
-                    .($this->BRI ? "<button type='button' style='background:none; padding:0px' data-toggle='molpayseamless' data-mpsbill_mobile='".$order->get_billing_phone()."' data-mpsmerchantid='".$this->merchant_id."' data-mpsbill_desc='".$desc."' data-mpsbill_email='".$order->get_billing_email()."' data-mpscountry='".$order->get_billing_country()."' data-mpscurrency='".get_woocommerce_currency()."' data-mpschannel='credit24' data-mpsamount='".$total."' data-mpsorderid='".$order_number."' data-mpsbill_name='".$order->get_billing_first_name()." ".$order->get_billing_last_name()."' data-mpsvcode='".$vcode."' data-mpsreturnurl='".$mpsreturn."'><img src='".plugins_url( 'images/BRI.png', __FILE__ )."' width='100px' height='50px' style='border: 1px solid; border-radius: 5px; border-color: #DDD;'/></button>" : '')*/
+                        el.attr('data-mpsmerchantid',merchantID);
+                        el.attr('data-mpschannel',selectedMethod);
+                        el.attr('data-mpsamount',amt);
+                        el.attr('data-mpstcctype',cctype);
+                        el.attr('data-mpsorderid',orderID);
+                        el.attr('data-mpsbill_name',bill_name);
+                        el.attr('data-mpsbill_email',bill_email);
+                        el.attr('data-mpsbill_mobile',bill_mobile);
+                        el.attr('data-mpsbill_desc',bill_desc);
+                        el.attr('data-mpscurrency',currency);
+                        el.attr('data-mpsvcode',vcode);
+                        el.attr('data-mpsreturnurl',returnUrl);
+                        el.attr('data-mpscountry',country);
+                    });
                     
+                    function clearAttrData() {
+                        el.each(function () {
+                            const attrs = Array.from(this.attributes);
+
+                            attrs.forEach(attr => {
+                                if (attr.name.startsWith('data-')) {
+                                    jQuery(this).removeAttr(attr.name);
+                                }
+                            });
+
+                            jQuery(this).removeData();
+                        });
+                    }
+                });
+            </script>"                    
                     . "</form>";
         }
         
