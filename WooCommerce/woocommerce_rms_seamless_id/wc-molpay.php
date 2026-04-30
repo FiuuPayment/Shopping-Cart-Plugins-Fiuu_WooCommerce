@@ -82,7 +82,7 @@ function wcmolpay_gateway_load() {
             global $woocommerce;
 
             $this->id = 'molpay';
-            $this->icon = plugins_url( 'images/logo_Fiuu_small.png', __FILE__ );
+            $this->icon = plugins_url( 'images/logo_E2Pay_Fiuu_small.png', __FILE__ );
             $this->has_fields = false;
             $this->method_title = __( 'Fiuu', 'wcmolpay' );
             $this->method_description = __( 'Proceed payment via Fiuu Seamless Integration Plugin', 'woocommerce' );
@@ -532,7 +532,7 @@ function wcmolpay_gateway_load() {
 
                     // New Layout
                     . "<h3 style='font-size:16px; font-weight:bold;'><u>Pay via</u>:</h3>"
-                    . "<img src='".plugins_url('images/logo_Fiuu.png', __FILE__)."' width='150px' style='display:block; margin-bottom:10px;'>"
+                    . "<img src='".plugins_url('images/logo_E2Pay_Fiuu.png', __FILE__)."' width='150px' style='display:block; margin-bottom:10px;'>"
 
                     // Button Chooser
                     . "<div id='main-buttons' style='display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;'>"
