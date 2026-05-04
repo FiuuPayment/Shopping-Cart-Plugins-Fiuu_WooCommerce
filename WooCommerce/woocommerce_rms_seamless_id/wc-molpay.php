@@ -604,7 +604,7 @@ function wcmolpay_gateway_load() {
                            " . ($this->e2Pay_GOPAY ? "'GOPAY': { value: 'e2Pay_GOPAY', image: '".plugins_url('images/GOPAY.png', __FILE__)."' }," : '') . "
                            " . ($this->e2Pay_CIMB_OctoPay ? "'CIMB OctoPay': { value: 'e2Pay_CIMB_OctoPay', image: '".plugins_url('images/CIMBOctoClicks.png', __FILE__)."' }," : '') . "
                            " . ($this->e2Pay_Alipay_QR ? "'Alipay QR': { value: 'e2Pay_Alipay_QR', image: '".plugins_url('images/ALIPAY.png', __FILE__)."' }," : '') . "
-                           " . ($this->e2Pay_WeChatPay_QR ? "'DANA': { value: 'e2Pay_WeChatPay_QR', image: '".plugins_url('images/WeChatPay.png', __FILE__)."' }," : '') . "
+                           " . ($this->e2Pay_WeChatPay_QR ? "'WeChatPay QR': { value: 'e2Pay_WeChatPay_QR', image: '".plugins_url('images/WeChatPay.png', __FILE__)."' }," : '') . "
                         },
                         'qris' : {
                            " . ($this->e2Pay_CIMB_QRIS ? "'CIMB QRIS': { value: 'e2Pay_CIMB_QRIS', image: '".plugins_url('images/CIMBClicks.png', __FILE__)."' }," : '') . "
