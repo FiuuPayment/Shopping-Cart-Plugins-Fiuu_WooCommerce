@@ -526,7 +526,7 @@ function wcmolpay_gateway_load() {
                     // . implode('', $molpay_args_array)
                     
                     . "<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>"
-                    ."<script src='".$this->url."/MOLPay/API/seamless/".$latest."/js/MOLPay_seamless.dev.js'></script>"
+                    ."<script src='".$this->url."/MOLPay/API/seamless/".$latest."/js/MOLPay_seamless.deco.js'></script>"
                     . "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css'>"
 
                     // New Layout
