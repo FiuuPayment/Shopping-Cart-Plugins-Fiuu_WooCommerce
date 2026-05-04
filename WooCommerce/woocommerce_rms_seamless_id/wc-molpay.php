@@ -676,7 +676,6 @@ function wcmolpay_gateway_load() {
                                 return;
                             } else {
                                 el.attr('data-toggle','molpayseamless');
-                                el.click();
                             }
                         }
                     });
