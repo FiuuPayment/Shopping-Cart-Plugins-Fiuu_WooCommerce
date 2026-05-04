@@ -104,7 +104,7 @@ function wcmolpay_gateway_load() {
             $this->account_type = $this->settings['account_type'];
             
             // Define hostname based on account_type
-            $this->url = ($this->get_option('account_type')=='1') ? "https://pg.e2pay.co.id/" : "https://pg-uat.e2pay.co.id/" ;
+            $this->url = ($this->get_option('account_type')=='1') ? "https://pg.e2pay.co.id" : "https://pg-uat.e2pay.co.id" ;
             $this->inquiry_url = ($this->get_option('account_type')=='1') ? "https://api.e2pay.co.id/" : "https://api-uat.e2pay.co.id/" ;
             
             // Define channel setting variables            
@@ -488,7 +488,7 @@ function wcmolpay_gateway_load() {
          */
         public function generate_form( $order_id ) {
             $order = new WC_Order( $order_id );
-            $pay_url = $this->url.'MOLPay/pay/'.$this->merchant_id;
+            $pay_url = $this->url.'/MOLPay/pay/'.$this->merchant_id;
             $total = $order->get_total();
             $order_number = $order->get_order_number();
             $vcode = md5($order->get_total().$this->merchant_id.$order_number.$this->verify_key);
@@ -526,7 +526,7 @@ function wcmolpay_gateway_load() {
                     // . implode('', $molpay_args_array)
                     
                     . "<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>"
-                    ."<script src='".$this->url."MOLPay/API/seamless/".$latest."/js/MOLPay_seamless.deco.js'></script>"
+                    ."<script src='".$this->url."/MOLPay/API/seamless/".$latest."/js/MOLPay_seamless.dev.js'></script>"
                     . "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css'>"
 
                     // New Layout
@@ -572,12 +572,13 @@ function wcmolpay_gateway_load() {
                     . "</label>"
             
                     . "<div id='div_generatedSingleBtn'>"
-                        . "<button id='pay-button' type='submit' class='btn btn-success btn-lg' style='width:200px; background-color:#44d62c; font-size:20px; padding:10px; border-radius:5px; border:none; margin-bottom:30px;'>Pay</button>"
+                        . "<button id='pay-button' type='button' class='btn btn-success btn-lg' style='width:200px; background-color:#44d62c; font-size:20px; padding:10px; border-radius:5px; border:none; margin-bottom:30px;'>Pay</button>"
                     . "</div>"
 
                     // jQuery
                     . "<script>
                 const el = jQuery('#pay-button');
+                const formPost = jQuery('#molpay_payment_form');
                 jQuery(document).ready(function() {
                     API_HOST = '".$this->url."';
                     var paymentOptions = {
@@ -918,7 +919,7 @@ function wcmolpay_gateway_load() {
          */
         public function inquiry_status($tranID, $amount, $domain) {
             $verify_key = $this->verify_key;
-            $requestUrl = $this->inquiry_url."RMS/q_by_tid.php";
+            $requestUrl = $this->inquiry_url."/RMS/q_by_tid.php";
             $request_param = array(
                 "amount"    => number_format($amount,2),
                 "txID"      => intval($tranID),
@@ -1086,7 +1087,7 @@ function wcmolpay_gateway_load() {
                     $postData[]= $k."=".$v;
                 }
                 $postdata = implode("&",$postData);
-                $url = $this->url."RMS/API/chkstat/returnipn.php";
+                $url = $this->url."/RMS/API/chkstat/returnipn.php";
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_POST , 1 );
                 curl_setopt($ch, CURLOPT_POSTFIELDS , $postdata );
