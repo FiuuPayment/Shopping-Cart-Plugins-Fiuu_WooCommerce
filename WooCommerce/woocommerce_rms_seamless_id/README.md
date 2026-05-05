@@ -1,5 +1,14 @@
 # Change log for WooCommerce Razer Merchant Services Seamless Plugin
 
+## v5.3.1 - May 4, 2026
+
+**Updates:**
+
+- Update Layout based on Channel of ID
+- Rebrand to E2Pay - Subsidiary of Fiuu
+- Removing NuCASH, CIMB Rekening Ponsel and Octo Mobile channels
+- Adding BCA, Alipay QR, ShopeePay QR, WeChatPay QR, BSI VA, Indomaret, Alfamart, CUMB QRIS, MBayar QRIS, and ShopeePay QRIS channels
+
 ## v5.3.0 - May 24, 2021
 
 **Updates:**
