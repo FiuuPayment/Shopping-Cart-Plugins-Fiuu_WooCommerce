@@ -25,8 +25,8 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
         $this->id                 = 'wcmolpay';
         $this->icon = plugins_url('images/logo_E2Pay_Fiuu_small.png', __FILE__);
         $this->has_fields = false;
-        $this->method_title       = __('Fiuu', 'wcmolpay');
-        $this->method_description = __('Proceed payment via Fiuu Normal Integration Plugin', 'wcmolpay');
+        $this->method_title       = __('E2Pay', 'wcmolpay');
+        $this->method_description = __('Proceed payment via E2Pay Normal Integration Plugin', 'wcmolpay');
         // Load the form fields.
         $this->init_form_fields();
 
@@ -139,8 +139,8 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
     public function admin_options()
     {
 ?>
-        <h3><?php _e('Fiuu', 'wcmolpay'); ?></h3>
-        <p><?php _e('Fiuu works by sending the user to Fiuu to enter their payment information.', 'wcmolpay'); ?></p>
+        <h3><?php _e('E2Pay', 'wcmolpay'); ?></h3>
+        <p><?php _e('E2Pay works by sending the user to E2Pay to enter their payment information.', 'wcmolpay'); ?></p>
         <table class="form-table">
             <?php $this->generate_settings_html(); ?>
         </table><!--/.form-table-->
@@ -157,7 +157,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
             'enabled' => array(
                 'title' => __( 'Enable/Disable', 'wcmolpay' ),
                 'type' => 'checkbox',
-                'label' => __( 'Enable Fiuu', 'wcmolpay' ),
+                'label' => __( 'Enable E2Pay', 'wcmolpay' ),
                 'default' => 'yes'
             ),
             'ordering_plugin' => array(
@@ -177,7 +177,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 'title' => __( 'Title', 'wcmolpay' ),
                 'type' => 'text',
                 'description' => __( 'This controls the title which the user sees during checkout.', 'wcmolpay' ),
-                'default' => __( 'Fiuu', 'wcmolpay' ),
+                'default' => __( 'E2Pay', 'wcmolpay' ),
                 'desc_tip' => true,
             ),
             'payment_title' => array(
@@ -192,25 +192,25 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 'title' => __( 'Description', 'wcmolpay' ),
                 'type' => 'textarea',
                 'description' => __( 'This controls the description which the user sees during checkout.', 'wcmolpay' ),
-                'default' => __( 'Pay with Fiuu', 'wcmolpay' ),
+                'default' => __( 'Pay with E2Pay', 'wcmolpay' ),
                 'desc_tip' => true,
             ),
             'merchant_id' => array(
                 'title' => __( 'Merchant ID', 'wcmolpay' ),
                 'type' => 'text',
-                'description' => __( 'Please enter your Fiuu Merchant ID.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.e2pay.co.id/" target="_blank">', '</a>' ),
+                'description' => __( 'Please enter your E2Pay Merchant ID.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sE2Pay Account%s.', 'wcmolpay' ), '<a href="https://portal.e2pay.co.id/" target="_blank">', '</a>' ),
                 'default' => ''
             ),
             'verify_key' => array(
                 'title' => __( 'Verify Key', 'wcmolpay' ),
                 'type' => 'text',
-                'description' => __( 'Please enter your Fiuu Verify Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.e2pay.co.id/" target="_blank">', '</a>' ),
+                'description' => __( 'Please enter your E2Pay Verify Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sE2Pay Account%s.', 'wcmolpay' ), '<a href="https://portal.e2pay.co.id/" target="_blank">', '</a>' ),
                 'default' => ''
             ),
             'secret_key' => array(
                 'title' => __( 'Secret Key', 'wcmolpay' ),
                 'type' => 'text',
-                'description' => __( 'Please enter your Fiuu Secret Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.e2pay.co.id/" target="_blank">', '</a>' ),
+                'description' => __( 'Please enter your E2Pay Secret Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sE2Pay Account%s.', 'wcmolpay' ), '<a href="https://portal.e2pay.co.id/" target="_blank">', '</a>' ),
                 'default' => ''
             ),
             'account_type' => array(
@@ -311,7 +311,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
     }
 
     /**
-     * Check for Fiuu Response
+     * Check for E2Pay Response
      *
      * @access public
      * @return void
@@ -327,7 +327,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
         } else if ($_POST['nbcb'] == '2') {
             do_action("valid_molpay_request_notification", $_POST);
         } else {
-            $error_message = "Fiuu Request Failure";
+            $error_message = "E2Pay Request Failure";
             $this->logger->error($error_message, $this->log_context);
             wp_die($error_message);
         }
@@ -420,7 +420,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
     public function merchant_id_missing_message()
     {
         $message = '<div class="error">';
-        $message .= '<p>' . sprintf(__('<strong>Gateway Disabled</strong> You should fill in your Merchant ID in Fiuu. %sClick here to configure!%s', 'wcmolpay'), '<a href="' . get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=wc_molpay_gateway">', '</a>') . '</p>';
+        $message .= '<p>' . sprintf(__('<strong>Gateway Disabled</strong> You should fill in your Merchant ID in E2Pay. %sClick here to configure!%s', 'wcmolpay'), '<a href="' . get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=wc_molpay_gateway">', '</a>') . '</p>';
         $message .= '</div>';
         echo $message;
     }
@@ -432,7 +432,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
     public function verify_key_missing_message()
     {
         $message = '<div class="error">';
-        $message .= '<p>' . sprintf(__('<strong>Gateway Disabled</strong> You should fill in your Verify Key in Fiuu. %sClick here to configure!%s', 'wcmolpay'), '<a href="' . get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=wc_molpay_gateway">', '</a>') . '</p>';
+        $message .= '<p>' . sprintf(__('<strong>Gateway Disabled</strong> You should fill in your Verify Key in E2Pay. %sClick here to configure!%s', 'wcmolpay'), '<a href="' . get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=wc_molpay_gateway">', '</a>') . '</p>';
         $message .= '</div>';
         echo $message;
     }
@@ -444,7 +444,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
     public function secret_key_missing_message()
     {
         $message = '<div class="error">';
-        $message .= '<p>' . sprintf(__('<strong>Gateway Disabled</strong> You should fill in your Secret Key in Fiuu. %sClick here to configure!%s', 'wcmolpay'), '<a href="' . get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=wc_molpay_gateway">', '</a>') . '</p>';
+        $message .= '<p>' . sprintf(__('<strong>Gateway Disabled</strong> You should fill in your Secret Key in E2Pay. %sClick here to configure!%s', 'wcmolpay'), '<a href="' . get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=wc_molpay_gateway">', '</a>') . '</p>';
         $message .= '</div>';
         echo $message;
     }
@@ -456,7 +456,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
     public function account_type_missing_message()
     {
         $message = '<div class="error">';
-        $message .= '<p>' . sprintf(__('<strong>Gateway Disabled</strong> Select account type in Fiuu. %sClick here to configure!%s', 'wcmolpay'), '<a href="' . get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=wc_molpay_gateway">', '</a>') . '</p>';
+        $message .= '<p>' . sprintf(__('<strong>Gateway Disabled</strong> Select account type in E2Pay. %sClick here to configure!%s', 'wcmolpay'), '<a href="' . get_admin_url() . 'admin.php?page=wc-settings&tab=checkout&section=wc_molpay_gateway">', '</a>') . '</p>';
         $message .= '</div>';
         echo $message;
     }
@@ -506,7 +506,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
     }
 
     /**
-     * Update Cart based on Fiuu status
+     * Update Cart based on E2Pay status
      * 
      * @global mixed $woocommerce
      * @param int $order_id
@@ -542,14 +542,14 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
             if ($MOLPay_status == "00") {
                 $order->payment_complete();
             } else {
-                $order->update_status($W_status, sprintf(__('Payment %s via Fiuu.', 'woocommerce'), $tranID));
+                $order->update_status($W_status, sprintf(__('Payment %s via E2Pay.', 'woocommerce'), $tranID));
             }
             if ($this->payment_title == 'yes') {
                 $paytitle = $this->payment_titles[strtolower($channel)];
                 $order->set_payment_method_title($paytitle);
                 $order->save();
             }
-            $order->add_order_note('Fiuu Payment Status: ' . $M_status . '<br>Transaction ID: ' . $tranID . $referer);
+            $order->add_order_note('E2Pay Payment Status: ' . $M_status . '<br>Transaction ID: ' . $tranID . $referer);
         } else {
             echo "Order completed";
             exit;

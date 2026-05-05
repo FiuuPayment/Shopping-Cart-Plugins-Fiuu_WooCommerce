@@ -9,7 +9,7 @@
  */
 
 /**
- * Plugin Name: WooCommerce Fiuu Normal
+ * Plugin Name: WooCommerce E2Pay Normal
  * Plugin URI: https://github.com/RazerMS/WordPress_WooCommerce_WP-eCommerce_ClassiPress
  * Description: WooCommerce Fiuu | The leading payment gateway in South East Asia Grow your business with Fiuu payment solutions & free features: Physical Payment at 7-Eleven, Seamless Checkout, Tokenization, Loyalty Program and more for WooCommerce
  * Author: Fiuu Services Tech Team
@@ -29,7 +29,7 @@
  */
 function wcmolpay_woocommerce_fallback_notice() {
     $message = '<div class="error">';
-    $message .= '<p>' . __( 'WooCommerce Fiuu Gateway depends on the last version of <a href="http://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a> to work!' , 'wcmolpay' ) . '</p>';
+    $message .= '<p>' . __( 'WooCommerce E2Pay Gateway depends on the last version of <a href="http://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a> to work!' , 'wcmolpay' ) . '</p>';
     $message .= '</div>';
     echo $message;
 }
@@ -48,7 +48,7 @@ function woocommerce_myplugin(){
     add_filter( 'woocommerce_payment_gateways', 'wcmolpay_add_gateway' );
 
     /**
-     * Add Fiuu gateway to ensure WooCommerce can load it
+     * Add E2Pay gateway to ensure WooCommerce can load it
      * 
      * @param array $methods
      * @return array
