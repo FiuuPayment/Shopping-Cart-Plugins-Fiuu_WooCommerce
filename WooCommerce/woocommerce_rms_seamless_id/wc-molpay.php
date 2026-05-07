@@ -104,8 +104,8 @@ function wcmolpay_gateway_load() {
             $this->account_type = $this->settings['account_type'];
             
             // Define hostname based on account_type
-            $this->url = ($this->get_option('account_type')=='1') ? "https://pg.e2pay.co.id" : "https://pg-uat.e2pay.co.id" ;
-            $this->inquiry_url = ($this->get_option('account_type')=='1') ? "https://api.e2pay.co.id/" : "https://api-uat.e2pay.co.id/" ;
+            $this->url = ($this->get_option('account_type')=='1') ? "https://pg.e2pay.co.id" : "https://pg-sandbox.e2pay.co.id" ;
+            $this->inquiry_url = ($this->get_option('account_type')=='1') ? "https://api.e2pay.co.id/" : "https://api-sandbox.e2pay.co.id/" ;
             
             // Define channel setting variables            
             $this->CIMB_NIAGA = ($this->get_option('CIMB_NIAGA')=='yes' ? true : false);
