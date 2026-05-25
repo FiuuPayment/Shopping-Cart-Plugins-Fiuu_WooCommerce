@@ -861,7 +861,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
      */
     public function acknowledgeResponse($response)
     {
-        if ($isset($response['nbcb']) && response['nbcb'] == '1') {
+        if (isset($response['nbcb']) && $response['nbcb'] == '1') {
             echo "CBTOKEN:MPSTATOK";
             exit;
         } else {
