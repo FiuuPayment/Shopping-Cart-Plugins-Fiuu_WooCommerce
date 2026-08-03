@@ -400,14 +400,13 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
             }
         }
         $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
+        $order = $WCOrderId ? wc_get_order($WCOrderId) : false;
 
-        if (empty($WCOrderId)) {
-            $error_message = "Order not found";
-            $this->logger->error($error_message, $this->log_context);
-            wp_die($error_message);
+        if (!$order) {
+            $this->log_unresolved_order($_POST, 'ReturnURL');
+            wp_die('Order not found', 'Fiuu Payment Error', array('response' => 400));
         }
 
-        $order = new WC_Order($WCOrderId);
         $referer = "<br>Referer: ReturnURL";
         $getStatus =  $order->get_status();
         if (!in_array($getStatus, array('processing', 'completed'))) {
@@ -466,6 +465,12 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
 
         $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
 
+        if (!($WCOrderId && wc_get_order($WCOrderId))) {
+            $this->log_unresolved_order($_POST, 'NotificationURL');
+            status_header(400);
+            exit;
+        }
+
         $referer = "<br>Referer: NotificationURL";
         $this->update_Cart_by_Status($WCOrderId, $status, $_POST['tranID'], $referer, $_POST['channel'], $extraP);
         $this->acknowledgeResponse($_POST);
@@ -508,6 +513,12 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
         }
 
         $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
+
+        if (!($WCOrderId && wc_get_order($WCOrderId))) {
+            $this->log_unresolved_order($_POST, 'CallbackURL');
+            status_header(400);
+            exit;
+        }
 
         $referer = "<br>Referer: CallbackURL";
         $this->update_Cart_by_Status($WCOrderId, $status, $_POST['tranID'], $referer, $_POST['channel'], $extraP);
@@ -854,8 +865,31 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
     }
 
     /**
+     * Log a callback whose orderid did not resolve to a WooCommerce order, without
+     * recording secret/verify keys, so support can investigate the missing mapping.
+     *
+     * @param array  $response Raw POST payload from Fiuu.
+     * @param string $context  Handler that received the callback (ReturnURL, NotificationURL, CallbackURL).
+     */
+    private function log_unresolved_order($response, $context)
+    {
+        $this->logger->error(
+            sprintf(
+                '%s: no WooCommerce order found for orderid "%s" (tranID: %s, channel: %s, status: %s, domain: %s)',
+                $context,
+                isset($response['orderid']) ? $response['orderid'] : '',
+                isset($response['tranID']) ? $response['tranID'] : '',
+                isset($response['channel']) ? $response['channel'] : '',
+                isset($response['status']) ? $response['status'] : '',
+                isset($response['domain']) ? $response['domain'] : ''
+            ),
+            $this->log_context
+        );
+    }
+
+    /**
      * Acknowledge transaction result
-     * 
+     *
      * @global mixed $woocommerce
      * @param array $response
      */
