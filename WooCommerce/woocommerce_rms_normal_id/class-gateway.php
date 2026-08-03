@@ -611,11 +611,9 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
         }
 
         // Use wc_get_order() (HPOS-safe) to confirm the resolved ID maps to a real, loadable order.
+        // Logging is left to the caller (log_unresolved_order()), which has the fuller request
+        // context (tranID/channel/status/domain) and which handler is involved.
         if (empty($WCOrderId) || !wc_get_order($WCOrderId)) {
-            $this->logger->error(
-                sprintf('Unable to resolve WooCommerce order for Fiuu orderid "%s" (ordering_plugin=%s).', $orderid, $this->ordering_plugin),
-                $this->log_context
-            );
             return false;
         }
 
