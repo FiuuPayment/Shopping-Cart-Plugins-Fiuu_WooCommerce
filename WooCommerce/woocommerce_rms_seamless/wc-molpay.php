@@ -265,7 +265,7 @@ function wcmolpay_gateway_load() {
                     'title' => __( '<p style="color:red;">Installed Ordering Plugins</p>', 'wcmolpay' ),
                     'type' => 'select',
                     'label' => __( ' ', 'wcmolpay' ),
-                    'default' => 'Sequential Order Numbers',
+                    'default' => '0',
                     'options' => array(
                         '0' => __( 'Not install any ordering plugin', 'wcmolpay'),
                         '1' => __( 'Sequential Order Numbers', 'wcmolpay' ),
