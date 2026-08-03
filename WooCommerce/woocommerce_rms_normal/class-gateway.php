@@ -231,7 +231,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 'title' => __('Account Type', 'wcmolpay'),
                 'type' => 'select',
                 'label' => __(' ', 'wcmolpay'),
-                'default' => 'PRODUCTION',
+                'default' => '1',
                 'options' => array(
                     '1'  => __('PRODUCTION', 'wcmolpay'),
                     '2' => __('SANDBOX', 'wcmolpay')

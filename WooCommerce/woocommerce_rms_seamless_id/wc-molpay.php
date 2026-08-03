@@ -267,7 +267,7 @@ function wcmolpay_gateway_load() {
                     'title' => __( 'Account Type', 'wcmolpay' ),
                     'type' => 'select',
                     'label' => __( ' ', 'wcmolpay' ),
-                    'default' => 'PRODUCTION',
+                    'default' => '1',
                     'options' => array(
                         '1'  => __('PRODUCTION', 'wcmolpay' ),
                         '2' => __( 'SANDBOX', 'wcmolpay' )
