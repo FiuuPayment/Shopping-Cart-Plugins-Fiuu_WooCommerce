@@ -178,7 +178,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 'title' => __('<p style="color:red;">Installed Ordering Plugins</p>', 'wcmolpay'),
                 'type' => 'select',
                 'label' => __(' ', 'wcmolpay'),
-                'default' => 'Sequential Order Numbers',
+                'default' => '0',
                 'options' => array(
                     '0' => __('Not install any ordering plugin', 'wcmolpay'),
                     '1' => __('Sequential Order Numbers', 'wcmolpay'),
@@ -231,7 +231,7 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 'title' => __('Account Type', 'wcmolpay'),
                 'type' => 'select',
                 'label' => __(' ', 'wcmolpay'),
-                'default' => 'PRODUCTION',
+                'default' => '1',
                 'options' => array(
                     '1'  => __('PRODUCTION', 'wcmolpay'),
                     '2' => __('SANDBOX', 'wcmolpay')
@@ -465,9 +465,11 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
 
         $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
 
-        if (!($WCOrderId && wc_get_order($WCOrderId))) {
+        if (empty($WCOrderId)) {
             $this->log_unresolved_order($_POST, 'NotificationURL');
-            status_header(400);
+            // Do not acknowledge: leaving this RMN un-acknowledged lets Fiuu retry it later
+            // (e.g. if the order wasn't persisted yet), instead of falsely confirming completion.
+            status_header(200);
             exit;
         }
 
@@ -514,9 +516,11 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
 
         $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
 
-        if (!($WCOrderId && wc_get_order($WCOrderId))) {
+        if (empty($WCOrderId)) {
             $this->log_unresolved_order($_POST, 'CallbackURL');
-            status_header(400);
+            // Do not acknowledge: leaving this RMN un-acknowledged lets Fiuu retry it later
+            // (e.g. if the order wasn't persisted yet), instead of falsely confirming completion.
+            status_header(200);
             exit;
         }
 
@@ -754,7 +758,15 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
     {
         global $woocommerce;
 
-        $order = new WC_Order($orderid);
+        $order = wc_get_order($orderid);
+        if (!$order) {
+            $this->logger->error(
+                sprintf('update_Cart_by_Status: Order #%s could not be loaded.%s', $orderid, $referer),
+                $this->log_context
+            );
+            return;
+        }
+
         switch ($MOLPay_status) {
             case '00':
                 $M_status = 'SUCCESSFUL';
@@ -841,26 +853,32 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
     {
         switch ($this->ordering_plugin) {
             case '1':
-                $args = array(
-                    'limit' => 1,
-                    array(
-                        'key' => '_order_number',
-                        'value' => $orderid,
-                        'compare' => '='
-                    )
-                );
-                $orders = wc_get_orders($args);
-                $data = json_decode($orders[0], true);
-                $WCOrderId = $data['id'];
+                $orders = wc_get_orders(array(
+                    'limit'      => 1,
+                    'meta_key'   => '_order_number',
+                    'meta_value' => $orderid,
+                    'return'     => 'ids',
+                ));
+                $WCOrderId = !empty($orders) ? $orders[0] : false;
                 break;
             case '2':
-                $WCOrderId = wc_seq_order_number_pro()->find_order_by_order_number($orderid);
+                $WCOrderId = function_exists('wc_seq_order_number_pro') ? wc_seq_order_number_pro()->find_order_by_order_number($orderid) : false;
                 break;
             case '0':
             default:
                 $WCOrderId = $orderid;
                 break;
         }
+
+        // Use wc_get_order() (HPOS-safe) to confirm the resolved ID maps to a real, loadable order.
+        if (empty($WCOrderId) || !wc_get_order($WCOrderId)) {
+            $this->logger->error(
+                sprintf('Unable to resolve WooCommerce order for Fiuu orderid "%s" (ordering_plugin=%s).', $orderid, $this->ordering_plugin),
+                $this->log_context
+            );
+            return false;
+        }
+
         return $WCOrderId;
     }
 
