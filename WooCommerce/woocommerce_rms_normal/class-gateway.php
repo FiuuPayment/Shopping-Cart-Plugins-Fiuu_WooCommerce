@@ -844,10 +844,10 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
 
     /**
      * Obtain the original order id based using the returned transaction order id
-     * 
+     *
      * @global mixed $woocommerce
      * @param int $orderid
-     * @return int $real_order_id
+     * @return int|false WooCommerce order ID, or false if it could not be resolved to a loadable order.
      */
     public function get_WCOrderIdByOrderId($orderid)
     {

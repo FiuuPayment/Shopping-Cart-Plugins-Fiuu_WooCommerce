@@ -1343,7 +1343,14 @@ function wcmolpay_gateway_load() {
         public function update_Cart_by_Status($orderid, $MOLPay_status, $tranID, $referer, $channel) {
             global $woocommerce;
 
-            $order = new WC_Order( $orderid );
+            $order = wc_get_order( $orderid );
+            if (!$order) {
+                $this->logger->error(
+                    sprintf('update_Cart_by_Status: Order #%s could not be loaded.%s', $orderid, $referer),
+                    $this->log_context
+                );
+                return;
+            }
 
             switch ($MOLPay_status) {
                 case '00':

@@ -646,15 +646,9 @@ function wcmolpay_gateway_load() {
 
             $amount = $_POST['amount'];
             $orderid = $_POST['orderid'];
-            $appcode = $_POST['appcode'];
             $tranID = $_POST['tranID'];
             $domain = $_POST['domain'];
             $status = $_POST['status'];
-            $currency = $_POST['currency'];
-            $paydate = $_POST['paydate'];
-            $channel = $_POST['channel'];
-            $skey = $_POST['skey'];
-            $vkey = $this->secret_key;
 
             $verifyresult = $this->verifySkey($_POST);
             if( !$verifyresult )
@@ -715,17 +709,9 @@ function wcmolpay_gateway_load() {
 
             $_POST['treq']= '1'; // Additional parameter for IPN
 
-            $nbcb = $_POST['nbcb'];
-            $amount = $_POST['amount'];
             $orderid = $_POST['orderid'];
             $tranID = $_POST['tranID'];
             $status = $_POST['status'];
-            $domain = $_POST['domain'];
-            $currency = $_POST['currency'];
-            $appcode = $_POST['appcode'];
-            $paydate = $_POST['paydate'];
-            $skey = $_POST['skey'];
-            $vkey = $this->secret_key;
 
             $verifyresult = $this->verifySkey($_POST);
             if( !$verifyresult )
@@ -771,16 +757,9 @@ function wcmolpay_gateway_load() {
             global $woocommerce;
                         
             $nbcb = $_POST['nbcb'];
-            $amount = $_POST['amount'];
             $orderid = $_POST['orderid'];
             $tranID = $_POST['tranID'];
             $status = $_POST['status'];
-            $domain = $_POST['domain']; 
-            $currency = $_POST['currency'];
-            $appcode = $_POST['appcode'];
-            $paydate = $_POST['paydate'];
-            $skey = $_POST['skey'];
-            $vkey = $this->secret_key;
 
             $verifyresult = $this->verifySkey($_POST);
             if( !$verifyresult )
@@ -925,7 +904,15 @@ function wcmolpay_gateway_load() {
         public function update_Cart_by_Status($orderid, $MOLPay_status, $tranID, $referer) {
             global $woocommerce;
 
-            $order = new WC_Order( $orderid );
+            $order = wc_get_order( $orderid );
+            if (!$order) {
+                $this->logger->error(
+                    sprintf('update_Cart_by_Status: Order #%s could not be loaded.%s', $orderid, $referer),
+                    $this->log_context
+                );
+                return;
+            }
+
             switch ($MOLPay_status) {
                 case '00':
                     $M_status = 'SUCCESSFUL';
