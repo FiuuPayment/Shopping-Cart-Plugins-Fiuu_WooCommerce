@@ -931,6 +931,7 @@ function wcmolpay_gateway_load() {
                     . "</div>"
 
                     . "<script>
+                const el = jQuery('#pay-button');
                 jQuery(document).ready(function() {
                     var paymentOptions = {
                         'card': {
@@ -1030,6 +1031,7 @@ function wcmolpay_gateway_load() {
                         var selectedCategory = jQuery(this).data('category');
                         var dropdownList = jQuery('#dropdown-list');
                         dropdownList.empty();
+                        clearAttrData(el);
                         jQuery('#dropdown-button').text('Select payment method');
             
                         if (paymentOptions[selectedCategory]) {
@@ -1076,17 +1078,49 @@ function wcmolpay_gateway_load() {
                         var country = '" . $order->get_billing_country() . "';
                         var cctype = '" . $this->credit_tcctype . "';
             
-                        var append_data = `data-mpsmerchantid=\"`+merchantID+`\" data-mpschannel=\"`+selectedMethod+`\" 
-                                           data-mpsamount=\"`+amt+`\" data-mpstcctype=\"`+cctype+`\" data-mpsorderid=\"`+orderID+`\" data-mpsbill_name=\"`+bill_name+`\" 
-                                           data-mpsbill_email=\"`+bill_email+`\" data-mpsbill_mobile=\"`+bill_mobile+`\" 
-                                           data-mpsbill_desc=\"`+bill_desc+`\" data-mpscurrency=\"`+currency+`\" data-mpsvcode=\"`+vcode+`\" 
-                                           data-mpsreturnurl=\"`+returnUrl+`\" data-mpscountry=\"`+country+`\" `;
-            
-                        jQuery('#div_generatedSingleBtn').html(
-                            `<button type=\"button\" data-toggle=\"molpayseamless\" `+append_data+` 
-                                class=\"btn btn-success btn-lg\" style='width:200px; background-color:#44d62c; font-size:20px; padding:10px; border-radius:5px; border:none;'>Pay</button>`
-                        );
+                        clearAttrData(el);
+
+                        el.attr('data-mpsmerchantid',merchantID);
+                        el.attr('data-mpschannel',selectedMethod);
+                        el.attr('data-mpsamount',amt);
+                        el.attr('data-mpstcctype',cctype);
+                        el.attr('data-mpsorderid',orderID);
+                        el.attr('data-mpsbill_name',bill_name);
+                        el.attr('data-mpsbill_email',bill_email);
+                        el.attr('data-mpsbill_mobile',bill_mobile);
+                        el.attr('data-mpsbill_desc',bill_desc);
+                        el.attr('data-mpscurrency',currency);
+                        el.attr('data-mpsvcode',vcode);
+                        el.attr('data-mpsreturnurl',returnUrl);
+                        el.attr('data-mpscountry',country);
                     });
+
+                    // Handle Pay Button Clicked/Submit
+                    jQuery('#pay-button').on('click', function(e) {
+                        if (!jQuery(this).is('[data-toggle]')) {
+                            if (!jQuery('#agree').is(':checked')) {
+                                e.preventDefault();
+                                alert('Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy');
+                                return;
+                            } else {
+                                el.attr('data-toggle','molpayseamless');
+                            }
+                        }
+                    });
+
+                    function clearAttrData() {
+                        el.each(function () {
+                            const attrs = Array.from(this.attributes);
+
+                            attrs.forEach(attr => {
+                                if (attr.name.startsWith('data-')) {
+                                    jQuery(this).removeAttr(attr.name);
+                                }
+                            });
+
+                            jQuery(this).removeData();
+                        });
+                    }
                 });
             </script>"
                 . "</form>";
