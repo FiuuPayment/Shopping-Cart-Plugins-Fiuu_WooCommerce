@@ -654,6 +654,21 @@ function wcmolpay_gateway_load() {
             $skey = $_POST['skey'];
             $vkey = $this->secret_key;
 
+            $key0 = md5($tranID.$orderid.$status.$domain.$amount.$currency);
+            $key1 = md5($paydate.$domain.$key0.$appcode.$vkey);
+
+            // invalid transaction
+            if( $skey != $key1 )
+                $status = -1;
+
+            $post_id = wc_sequential_order_numbers()->find_order_by_order_number( $orderid );
+            $order = $post_id ? wc_get_order($post_id) : false;
+
+            if (!$order) {
+                $this->log_unresolved_order($_POST, 'ReturnURL');
+                wp_die('Order not found', 'Fiuu Payment Error', array('response' => 400));
+            }
+
             foreach($_POST as $k => $v) {
                 $postData[]= $k."=".$v;
             }
@@ -672,18 +687,9 @@ function wcmolpay_gateway_load() {
             $result = curl_exec( $ch );
             curl_close( $ch );
 
-            $key0 = md5($tranID.$orderid.$status.$domain.$amount.$currency);
-            $key1 = md5($paydate.$domain.$key0.$appcode.$vkey);
-
-            // invalid transaction
-            if( $skey != $key1 )
-                $status = -1;
-
-            $post_id = wc_sequential_order_numbers()->find_order_by_order_number( $orderid );
-            $order = new WC_Order( $post_id );
             $referer = "<br>Referer: ReturnURL";
             $getStatus =  $order->get_status();
-        
+
             if($getStatus != 'success') {
                 if ($status == "11") {
                     $referer .= " (Inquiry)";
@@ -723,6 +729,22 @@ function wcmolpay_gateway_load() {
             $skey = $_POST['skey'];
             $vkey = $this->secret_key;
 
+            $key0 = md5($tranID.$orderid.$status.$domain.$amount.$currency);
+            $key1 = md5($paydate.$domain.$key0.$appcode.$vkey);
+
+            if ($skey != $key1)
+                $status = "-1";
+
+            $post_id = wc_sequential_order_numbers()->find_order_by_order_number( $orderid );
+
+            if (empty($post_id) || !wc_get_order($post_id)) {
+                $this->log_unresolved_order($_POST, 'NotificationURL');
+                // Do not acknowledge: leaving this RMN un-acknowledged lets Fiuu retry it later
+                // (e.g. if the order wasn't persisted yet), instead of falsely confirming completion.
+                status_header(200);
+                exit;
+            }
+
             foreach($_POST as $k => $v) {
                 $postData[]= $k."=".$v;
             }
@@ -739,14 +761,7 @@ function wcmolpay_gateway_load() {
             curl_setopt($ch, CURLOPT_SSLVERSION , CURL_SSLVERSION_TLSv1 );
             $result = curl_exec( $ch );
             curl_close( $ch );
-            
-            $key0 = md5($tranID.$orderid.$status.$domain.$amount.$currency);
-            $key1 = md5($paydate.$domain.$key0.$appcode.$vkey);
 
-            if ($skey != $key1)
-                $status = "-1";
-            
-            $post_id = wc_sequential_order_numbers()->find_order_by_order_number( $orderid );
             $referer = "<br>Referer: NotificationURL";
             $this->update_Cart_by_Status($post_id, $status, $tranID, $referer);
         }
@@ -778,9 +793,18 @@ function wcmolpay_gateway_load() {
                 $status = "-1";
             
             $post_id = wc_sequential_order_numbers()->find_order_by_order_number( $orderid );
+
+            if (empty($post_id) || !wc_get_order($post_id)) {
+                $this->log_unresolved_order($_POST, 'CallbackURL');
+                // Do not acknowledge: leaving this RMN un-acknowledged lets Fiuu retry it later
+                // (e.g. if the order wasn't persisted yet), instead of falsely confirming completion.
+                status_header(200);
+                exit;
+            }
+
             $referer = "<br>Referer: CallbackURL";
             $this->update_Cart_by_Status($post_id, $status, $tranID, $referer);
-            
+
             if ( $nbcb=='1' ) {
                 //callback IPN feedback to notified Razer Merchant Services
                 echo "CBTOKEN:MPSTATOK"; exit;
@@ -874,8 +898,30 @@ function wcmolpay_gateway_load() {
         }
 
         /**
+         * Log a callback whose orderid did not resolve to a WooCommerce order, without
+         * recording secret/verify keys, so support can investigate the missing mapping.
+         *
+         * @param array  $response Raw POST payload from Fiuu.
+         * @param string $context  Handler that received the callback (ReturnURL, NotificationURL, CallbackURL).
+         */
+        private function log_unresolved_order($response, $context) {
+            $this->logger->error(
+                sprintf(
+                    '%s: no WooCommerce order found for orderid "%s" (tranID: %s, channel: %s, status: %s, domain: %s)',
+                    $context,
+                    isset($response['orderid']) ? $response['orderid'] : '',
+                    isset($response['tranID']) ? $response['tranID'] : '',
+                    isset($response['channel']) ? $response['channel'] : '',
+                    isset($response['status']) ? $response['status'] : '',
+                    isset($response['domain']) ? $response['domain'] : ''
+                ),
+                $this->log_context
+            );
+        }
+
+        /**
          * Update Cart based on Razer Merchant Services status
-         * 
+         *
          * @global mixed $woocommerce
          * @param int $order_id
          * @param int $MOLPay_status
