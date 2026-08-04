@@ -392,9 +392,9 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
 
         if (empty($WCOrderId)) {
             $this->log_unresolved_order($_POST, 'NotificationURL');
-            // Do not acknowledge: leaving this RMN un-acknowledged lets Fiuu retry it later
-            // (e.g. if the order wasn't persisted yet), instead of falsely confirming completion.
-            status_header(200);
+            // Respond with a controlled error and skip the acknowledgment (CBTOKEN / relay),
+            // so Fiuu can retry later instead of the gateway falsely confirming completion.
+            status_header(400);
             exit;
         }
 
@@ -420,9 +420,9 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
 
         if (empty($WCOrderId)) {
             $this->log_unresolved_order($_POST, 'CallbackURL');
-            // Do not acknowledge: leaving this RMN un-acknowledged lets Fiuu retry it later
-            // (e.g. if the order wasn't persisted yet), instead of falsely confirming completion.
-            status_header(200);
+            // Respond with a controlled error and skip the acknowledgment (CBTOKEN / relay),
+            // so Fiuu can retry later instead of the gateway falsely confirming completion.
+            status_header(400);
             exit;
         }
 

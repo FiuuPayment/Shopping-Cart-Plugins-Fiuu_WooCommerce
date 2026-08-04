@@ -1207,9 +1207,9 @@ function wcmolpay_gateway_load() {
 
             if (empty($WCOrderId) || !wc_get_order($WCOrderId)) {
                 $this->log_unresolved_order($_POST, 'NotificationURL');
-                // Do not acknowledge: leaving this RMN un-acknowledged lets Fiuu retry it later
-                // (e.g. if the order wasn't persisted yet), instead of falsely confirming completion.
-                status_header(200);
+                // Respond with a controlled error and skip the acknowledgment (CBTOKEN / relay),
+                // so Fiuu can retry later instead of the gateway falsely confirming completion.
+                status_header(400);
                 exit;
             }
 
@@ -1234,9 +1234,9 @@ function wcmolpay_gateway_load() {
 
             if (empty($WCOrderId) || !wc_get_order($WCOrderId)) {
                 $this->log_unresolved_order($_POST, 'CallbackURL');
-                // Do not acknowledge: leaving this RMN un-acknowledged lets Fiuu retry it later
-                // (e.g. if the order wasn't persisted yet), instead of falsely confirming completion.
-                status_header(200);
+                // Respond with a controlled error and skip the acknowledgment (CBTOKEN / relay),
+                // so Fiuu can retry later instead of the gateway falsely confirming completion.
+                status_header(400);
                 exit;
             }
 
