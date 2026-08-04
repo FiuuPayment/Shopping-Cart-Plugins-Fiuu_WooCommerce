@@ -656,12 +656,9 @@ function wcmolpay_gateway_load() {
             $skey = $_POST['skey'];
             $vkey = $this->secret_key;
 
-            $key0 = md5($tranID.$orderid.$status.$domain.$amount.$currency);
-            $key1 = md5($paydate.$domain.$key0.$appcode.$vkey);
-
-            // invalid transaction
-            if( $skey != $key1 )
-                $status = -1;
+            $verifyresult = $this->verifySkey($_POST);
+            if( !$verifyresult )
+                $status = "-1";
 
             $post_id = wc_seq_order_number_pro()->find_order_by_order_number( $orderid );
             $order = $post_id ? wc_get_order($post_id) : false;
@@ -730,10 +727,8 @@ function wcmolpay_gateway_load() {
             $skey = $_POST['skey'];
             $vkey = $this->secret_key;
 
-            $key0 = md5($tranID.$orderid.$status.$domain.$amount.$currency);
-            $key1 = md5($paydate.$domain.$key0.$appcode.$vkey);
-
-            if ($skey != $key1)
+            $verifyresult = $this->verifySkey($_POST);
+            if( !$verifyresult )
                 $status = "-1";
 
             $post_id = wc_seq_order_number_pro()->find_order_by_order_number( $orderid );
@@ -787,10 +782,8 @@ function wcmolpay_gateway_load() {
             $skey = $_POST['skey'];
             $vkey = $this->secret_key;
 
-            $key0 = md5($tranID.$orderid.$status.$domain.$amount.$currency);
-            $key1 = md5($paydate.$domain.$key0.$appcode.$vkey);
-
-            if ($skey != $key1)
+            $verifyresult = $this->verifySkey($_POST);
+            if( !$verifyresult )
                 $status = "-1";
             
             $post_id = wc_seq_order_number_pro()->find_order_by_order_number( $orderid );
@@ -957,6 +950,20 @@ function wcmolpay_gateway_load() {
             } else {
                 $order->update_status($W_status, sprintf(__('Payment %s via Razer Merchant Services.', 'woocommerce'), $tranID ) );
             }
+        }
+
+        /**
+         * To verify transaction result using merchant secret key setting.
+         *
+         * @param  array $response
+         * @return boolean verifyresult
+         */
+        public function verifySkey($response) {
+
+            $key0 = md5($response['tranID'].$response['orderid'].$response['status'].$response['domain'].$response['amount'].$response['currency']);
+            $key1 = md5($response['paydate'].$response['domain'].$key0.$response['appcode'].$this->secret_key);
+
+            return hash_equals($key1, $response['skey']);
         }
 
     }
