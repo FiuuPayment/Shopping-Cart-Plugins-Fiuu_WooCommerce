@@ -641,7 +641,7 @@ function wcmolpay_gateway_load() {
          */
         function check_molpay_response_returnurl() {
             global $woocommerce;
-            
+
             $_POST['treq']= '1'; // Additional parameter for IPN
 
             $amount = $_POST['amount'];
@@ -715,15 +715,15 @@ function wcmolpay_gateway_load() {
          */
         function check_molpay_response_notification() {
             global $woocommerce;
-            
+
             $_POST['treq']= '1'; // Additional parameter for IPN
-                        
+
             $nbcb = $_POST['nbcb'];
             $amount = $_POST['amount'];
             $orderid = $_POST['orderid'];
             $tranID = $_POST['tranID'];
             $status = $_POST['status'];
-            $domain = $_POST['domain']; 
+            $domain = $_POST['domain'];
             $currency = $_POST['currency'];
             $appcode = $_POST['appcode'];
             $paydate = $_POST['paydate'];
