@@ -2,7 +2,7 @@
 /**
  * Razer Merchant Services WooCommerce Shopping Cart Plugin
  * 
- * @author Razer Merchant Services Technical Team <technical-sa@razer.com>
+ * @author Razer Merchant Services Technical Team <technical@fiuu.com>
  * @version 3.0.0
  * @example For callback : http://shoppingcarturl/?wc-api=WC_Molpay_Gateway
  * @example For notification : http://shoppingcarturl/?wc-api=WC_Molpay_Gateway
@@ -10,10 +10,10 @@
 
 /**
  * Plugin Name: WooCommerce Razer Merchant Services Seamless for Sequential Order Numbers 
- * Plugin URI: https://github.com/RazerMS/WordPress_WooCommerce_WP-eCommerce_ClassiPress
+ * Plugin URI: https://github.com/FiuuPayment/Shopping-Cart-Plugins-Fiuu_OpenCart_3.0
  * Description: WooCommerce Razer Merchant Services | The leading payment gateway in South East Asia Grow your business with Razer Merchant Services payment solutions & free features: Physical Payment at 7-Eleven, Seamless Checkout, Tokenization, Loyalty Program and more for WooCommerce
  * Author: Razer Merchant Services Tech Team
- * Author URI: https://merchant.razer.com/
+ * Author URI: https://fiuu.com
  * Version: 3.0.1
  * License: MIT
  * Text Domain: wcmolpay
@@ -102,8 +102,8 @@ function wcmolpay_gateway_load() {
             $this->account_type = $this->settings['account_type'];
             
             // Define hostname based on account_type
-            $this->url = ($this->get_option('account_type')=='1') ? "https://www.onlinepayment.com.my/" : "https://sandbox.merchant.razer.com/" ;
-            $this->inquiry_url = ($this->get_option('account_type')=='1') ? "https://api.merchant.razer.com/" : "https://sandbox.merchant.razer.com/" ;
+            $this->url = ($this->get_option('account_type')=='1') ? "https://pay.fiuu.com/" : "https://sandbox-payment.fiuu.com/" ;
+            $this->inquiry_url = ($this->get_option('account_type')=='1') ? "https://api.fiuu.com/" : "https://sandbox-payment.fiuu.com/" ;
             
             // Define channel setting variables
             $this->credit = ($this->get_option('credit')=='yes' ? true : false);
@@ -228,19 +228,19 @@ function wcmolpay_gateway_load() {
                 'merchant_id' => array(
                     'title' => __( 'Merchant ID', 'wcmolpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your Razer Merchant Services Merchant ID.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sRazer Merchant Services Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your Razer Merchant Services Merchant ID.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sRazer Merchant Services Account%s.', 'wcmolpay' ), '<a href="https://portal.fiuu.com/" target="_blank">', '</a>' ),
                     'default' => ''
                 ),
                 'verify_key' => array(
                     'title' => __( 'Verify Key', 'wcmolpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your Razer Merchant Services Verify Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sRazer Merchant Services Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your Razer Merchant Services Verify Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sRazer Merchant Services Account%s.', 'wcmolpay' ), '<a href="https://portal.fiuu.com/" target="_blank">', '</a>' ),
                     'default' => ''
                 ),
                 'secret_key' => array(
                     'title' => __( 'Secret Key', 'wcmolpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your Razer Merchant Services Secret Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sRazer Merchant Services Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your Razer Merchant Services Secret Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sRazer Merchant Services Account%s.', 'wcmolpay' ), '<a href="https://portal.fiuu.com/" target="_blank">', '</a>' ),
                     'default' => ''
                 ),
                 'account_type' => array(

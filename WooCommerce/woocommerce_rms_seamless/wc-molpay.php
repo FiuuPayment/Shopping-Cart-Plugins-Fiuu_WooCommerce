@@ -107,8 +107,8 @@ function wcmolpay_gateway_load() {
             $this->extend_vcode = $this->settings['extend_vcode'];
             
             // Define hostname based on account_type
-            $this->url = ($this->get_option('account_type')=='1') ? "https://pay.fiuu.com/" : "https://sandbox.merchant.razer.com/";
-            $this->inquiry_url = ($this->get_option('account_type')=='1') ? "https://api.fiuu.com/" : "https://sandbox.merchant.razer.com/";
+            $this->url = ($this->get_option('account_type')=='1') ? "https://pay.fiuu.com/" : "https://sandbox-payment.fiuu.com/";
+            $this->inquiry_url = ($this->get_option('account_type')=='1') ? "https://api.fiuu.com/" : "https://sandbox-payment.fiuu.com/";
             
             // Define channel setting variables
             $this->credit = ($this->get_option('credit')=='yes' ? true : false);
@@ -301,19 +301,19 @@ function wcmolpay_gateway_load() {
                 'merchant_id' => array(
                     'title' => __( 'Merchant ID', 'wcmolpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your Fiuu Merchant ID.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your Fiuu Merchant ID.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.fiuu.com/" target="_blank">', '</a>' ),
                     'default' => ''
                 ),
                 'verify_key' => array(
                     'title' => __( 'Verify Key', 'wcmolpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your Fiuu Verify Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your Fiuu Verify Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.fiuu.com/" target="_blank">', '</a>' ),
                     'default' => ''
                 ),
                 'secret_key' => array(
                     'title' => __( 'Secret Key', 'wcmolpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your Fiuu Secret Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your Fiuu Secret Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.fiuu.com/" target="_blank">', '</a>' ),
                     'default' => ''
                 ),
                 'account_type' => array(
@@ -921,8 +921,8 @@ function wcmolpay_gateway_load() {
 
                     . "<label for='agree' style='font-size: 14px; display: block; margin-bottom: 15px;'>"
                         . "<input type='checkbox' name='checkbox' value='check' id='agree' style='margin-right: 5px;' />"
-                            . " I have read and agree to the <b> <a href='https://merchant.razer.com/v3/terms-of-service/' style='color: #44d62c;' target='_blank'>Terms & Conditions</a> </b> and "
-                            . "<b><a href='https://merchant.razer.com/v3/privacy-policy/' style='color: #44d62c;' target='_blank'>Privacy Policy</a></b>."
+                            . " I have read and agree to the <b> <a href='https://fiuu.com/terms-of-services/' style='color: #44d62c;' target='_blank'>Terms & Conditions</a> </b> and "
+                            . "<b><a href='https://fiuu.com/privacy-policy/' style='color: #44d62c;' target='_blank'>Privacy Policy</a></b>."
                         . "<br/>"
                     . "</label>"
             
