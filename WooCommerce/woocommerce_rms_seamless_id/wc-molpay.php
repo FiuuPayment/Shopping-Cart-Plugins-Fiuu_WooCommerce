@@ -806,7 +806,12 @@ function wcmolpay_gateway_load() {
                 $status = "-1";
 
             $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
-            $order = new WC_Order( $WCOrderId );
+            $order = $WCOrderId ? wc_get_order($WCOrderId) : false;
+
+            if (!$order) {
+                $this->log_unresolved_order($_POST, 'ReturnURL');
+                wp_die('Order not found', 'E2Pay Payment Error', array('response' => 400));
+            }
 
             $referer = "<br>Referer: ReturnURL";
             $getStatus =  $order->get_status();
@@ -841,6 +846,15 @@ function wcmolpay_gateway_load() {
                 $status = "-1";
 
             $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
+
+            if (empty($WCOrderId) || !wc_get_order($WCOrderId)) {
+                $this->log_unresolved_order($_POST, 'NotificationURL');
+                // Respond with a controlled error and skip the acknowledgment (CBTOKEN / relay),
+                // so Fiuu can retry later instead of the gateway falsely confirming completion.
+                status_header(400);
+                exit;
+            }
+
             $referer = "<br>Referer: NotificationURL";
             $this->update_Cart_by_Status($WCOrderId, $status, $_POST['tranID'], $referer, $_POST['channel']);
             $this->acknowledgeResponse($_POST);
@@ -859,6 +873,15 @@ function wcmolpay_gateway_load() {
                 $status = "-1";
             
             $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
+
+            if (empty($WCOrderId) || !wc_get_order($WCOrderId)) {
+                $this->log_unresolved_order($_POST, 'CallbackURL');
+                // Respond with a controlled error and skip the acknowledgment (CBTOKEN / relay),
+                // so Fiuu can retry later instead of the gateway falsely confirming completion.
+                status_header(400);
+                exit;
+            }
+
             $referer = "<br>Referer: CallbackURL";
             $this->update_Cart_by_Status($WCOrderId, $status, $_POST['tranID'], $referer, $_POST['channel']);
             $this->acknowledgeResponse($_POST);
@@ -962,7 +985,14 @@ function wcmolpay_gateway_load() {
         public function update_Cart_by_Status($orderid, $MOLPay_status, $tranID, $referer, $channel) {
             global $woocommerce;
 
-            $order = new WC_Order( $orderid );
+            $order = wc_get_order( $orderid );
+            if (!$order) {
+                $this->logger->error(
+                    sprintf('update_Cart_by_Status: Order #%s could not be loaded.%s', $orderid, $referer),
+                    $this->log_context
+                );
+                return;
+            }
 
             switch ($MOLPay_status) {
                 case '00':
@@ -1072,8 +1102,30 @@ function wcmolpay_gateway_load() {
 
 
         /**
+         * Log a callback whose orderid did not resolve to a WooCommerce order, without
+         * recording secret/verify keys, so support can investigate the missing mapping.
+         *
+         * @param array  $response Raw POST payload from E2Pay.
+         * @param string $context  Handler that received the callback (ReturnURL, NotificationURL, CallbackURL).
+         */
+        private function log_unresolved_order($response, $context) {
+            $this->logger->error(
+                sprintf(
+                    '%s: no WooCommerce order found for orderid "%s" (tranID: %s, channel: %s, status: %s, domain: %s)',
+                    $context,
+                    isset($response['orderid']) ? $response['orderid'] : '',
+                    isset($response['tranID']) ? $response['tranID'] : '',
+                    isset($response['channel']) ? $response['channel'] : '',
+                    isset($response['status']) ? $response['status'] : '',
+                    isset($response['domain']) ? $response['domain'] : ''
+                ),
+                $this->log_context
+            );
+        }
+
+        /**
          * Acknowledge transaction result
-         * 
+         *
          * @global mixed $woocommerce
          * @param array $response
          */

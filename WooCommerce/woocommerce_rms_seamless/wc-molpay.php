@@ -9,11 +9,11 @@
  */
 
 /**
- * Plugin Name: WooCommerce Fiuu Services Seamless
+ * Plugin Name: WooCommerce Fiuu Seamless
  * Plugin URI: https://github.com/FiuuPayment/Shopping-Cart-Plugins-Fiuu_WooCommerce
  * Description: WooCommerce Fiuu | The leading payment gateway in South East Asia Grow your business with Fiuu Services payment solutions & free features: Physical Payment at 7-Eleven, Seamless Checkout, Tokenization, Loyalty Program and more for WooCommerce
  * Author: Fiuu Services Tech Team
- * Author URI: https://fiuu.com/
+ * Author URI: https://fiuu.com
  * Version: 6.2.0
  * License: MIT
  * Text Domain: wcmolpay
@@ -107,8 +107,8 @@ function wcmolpay_gateway_load() {
             $this->extend_vcode = $this->settings['extend_vcode'];
             
             // Define hostname based on account_type
-            $this->url = ($this->get_option('account_type')=='1') ? "https://pay.fiuu.com/" : "https://sandbox.merchant.razer.com/";
-            $this->inquiry_url = ($this->get_option('account_type')=='1') ? "https://api.fiuu.com/" : "https://sandbox.merchant.razer.com/";
+            $this->url = ($this->get_option('account_type')=='1') ? "https://pay.fiuu.com/" : "https://sandbox-payment.fiuu.com/";
+            $this->inquiry_url = ($this->get_option('account_type')=='1') ? "https://api.fiuu.com/" : "https://sandbox-payment.fiuu.com/";
             
             // Define channel setting variables
             $this->credit = ($this->get_option('credit')=='yes' ? true : false);
@@ -301,19 +301,19 @@ function wcmolpay_gateway_load() {
                 'merchant_id' => array(
                     'title' => __( 'Merchant ID', 'wcmolpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your Fiuu Merchant ID.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your Fiuu Merchant ID.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.fiuu.com/" target="_blank">', '</a>' ),
                     'default' => ''
                 ),
                 'verify_key' => array(
                     'title' => __( 'Verify Key', 'wcmolpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your Fiuu Verify Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your Fiuu Verify Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.fiuu.com/" target="_blank">', '</a>' ),
                     'default' => ''
                 ),
                 'secret_key' => array(
                     'title' => __( 'Secret Key', 'wcmolpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your Fiuu Secret Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your Fiuu Secret Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sFiuu Account%s.', 'wcmolpay' ), '<a href="https://portal.fiuu.com/" target="_blank">', '</a>' ),
                     'default' => ''
                 ),
                 'account_type' => array(
@@ -921,8 +921,8 @@ function wcmolpay_gateway_load() {
 
                     . "<label for='agree' style='font-size: 14px; display: block; margin-bottom: 15px;'>"
                         . "<input type='checkbox' name='checkbox' value='check' id='agree' style='margin-right: 5px;' />"
-                            . " I have read and agree to the <b> <a href='https://merchant.razer.com/v3/terms-of-service/' style='color: #44d62c;' target='_blank'>Terms & Conditions</a> </b> and "
-                            . "<b><a href='https://merchant.razer.com/v3/privacy-policy/' style='color: #44d62c;' target='_blank'>Privacy Policy</a></b>."
+                            . " I have read and agree to the <b> <a href='https://fiuu.com/terms-of-services/' style='color: #44d62c;' target='_blank'>Terms & Conditions</a> </b> and "
+                            . "<b><a href='https://fiuu.com/privacy-policy/' style='color: #44d62c;' target='_blank'>Privacy Policy</a></b>."
                         . "<br/>"
                     . "</label>"
             
@@ -931,6 +931,7 @@ function wcmolpay_gateway_load() {
                     . "</div>"
 
                     . "<script>
+                const el = jQuery('#pay-button');
                 jQuery(document).ready(function() {
                     var paymentOptions = {
                         'card': {
@@ -1030,6 +1031,7 @@ function wcmolpay_gateway_load() {
                         var selectedCategory = jQuery(this).data('category');
                         var dropdownList = jQuery('#dropdown-list');
                         dropdownList.empty();
+                        clearAttrData(el);
                         jQuery('#dropdown-button').text('Select payment method');
             
                         if (paymentOptions[selectedCategory]) {
@@ -1076,17 +1078,49 @@ function wcmolpay_gateway_load() {
                         var country = '" . $order->get_billing_country() . "';
                         var cctype = '" . $this->credit_tcctype . "';
             
-                        var append_data = `data-mpsmerchantid=\"`+merchantID+`\" data-mpschannel=\"`+selectedMethod+`\" 
-                                           data-mpsamount=\"`+amt+`\" data-mpstcctype=\"`+cctype+`\" data-mpsorderid=\"`+orderID+`\" data-mpsbill_name=\"`+bill_name+`\" 
-                                           data-mpsbill_email=\"`+bill_email+`\" data-mpsbill_mobile=\"`+bill_mobile+`\" 
-                                           data-mpsbill_desc=\"`+bill_desc+`\" data-mpscurrency=\"`+currency+`\" data-mpsvcode=\"`+vcode+`\" 
-                                           data-mpsreturnurl=\"`+returnUrl+`\" data-mpscountry=\"`+country+`\" `;
-            
-                        jQuery('#div_generatedSingleBtn').html(
-                            `<button type=\"button\" data-toggle=\"molpayseamless\" `+append_data+` 
-                                class=\"btn btn-success btn-lg\" style='width:200px; background-color:#44d62c; font-size:20px; padding:10px; border-radius:5px; border:none;'>Pay</button>`
-                        );
+                        clearAttrData(el);
+
+                        el.attr('data-mpsmerchantid',merchantID);
+                        el.attr('data-mpschannel',selectedMethod);
+                        el.attr('data-mpsamount',amt);
+                        el.attr('data-mpstcctype',cctype);
+                        el.attr('data-mpsorderid',orderID);
+                        el.attr('data-mpsbill_name',bill_name);
+                        el.attr('data-mpsbill_email',bill_email);
+                        el.attr('data-mpsbill_mobile',bill_mobile);
+                        el.attr('data-mpsbill_desc',bill_desc);
+                        el.attr('data-mpscurrency',currency);
+                        el.attr('data-mpsvcode',vcode);
+                        el.attr('data-mpsreturnurl',returnUrl);
+                        el.attr('data-mpscountry',country);
                     });
+
+                    // Handle Pay Button Clicked/Submit
+                    jQuery('#pay-button').on('click', function(e) {
+                        if (!jQuery(this).is('[data-toggle]')) {
+                            if (!jQuery('#agree').is(':checked')) {
+                                e.preventDefault();
+                                alert('Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy');
+                                return;
+                            } else {
+                                el.attr('data-toggle','molpayseamless');
+                            }
+                        }
+                    });
+
+                    function clearAttrData() {
+                        el.each(function () {
+                            const attrs = Array.from(this.attributes);
+
+                            attrs.forEach(attr => {
+                                if (attr.name.startsWith('data-')) {
+                                    jQuery(this).removeAttr(attr.name);
+                                }
+                            });
+
+                            jQuery(this).removeData();
+                        });
+                    }
                 });
             </script>"
                 . "</form>";
@@ -1164,7 +1198,12 @@ function wcmolpay_gateway_load() {
                 $status = "-1";
 
             $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
-            $order = new WC_Order( $WCOrderId );
+            $order = $WCOrderId ? wc_get_order($WCOrderId) : false;
+
+            if (!$order) {
+                $this->log_unresolved_order($_POST, 'ReturnURL');
+                wp_die('Order not found', 'Fiuu Payment Error', array('response' => 400));
+            }
 
             $referer = "<br>Referer: ReturnURL";
             $getStatus =  $order->get_status();
@@ -1199,6 +1238,15 @@ function wcmolpay_gateway_load() {
                 $status = "-1";
 
             $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
+
+            if (empty($WCOrderId) || !wc_get_order($WCOrderId)) {
+                $this->log_unresolved_order($_POST, 'NotificationURL');
+                // Respond with a controlled error and skip the acknowledgment (CBTOKEN / relay),
+                // so Fiuu can retry later instead of the gateway falsely confirming completion.
+                status_header(400);
+                exit;
+            }
+
             $referer = "<br>Referer: NotificationURL";
             $this->update_Cart_by_Status($WCOrderId, $status, $_POST['tranID'], $referer, $_POST['channel']);
             $this->acknowledgeResponse($_POST);
@@ -1217,6 +1265,15 @@ function wcmolpay_gateway_load() {
                 $status = "-1";
             
             $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
+
+            if (empty($WCOrderId) || !wc_get_order($WCOrderId)) {
+                $this->log_unresolved_order($_POST, 'CallbackURL');
+                // Respond with a controlled error and skip the acknowledgment (CBTOKEN / relay),
+                // so Fiuu can retry later instead of the gateway falsely confirming completion.
+                status_header(400);
+                exit;
+            }
+
             $referer = "<br>Referer: CallbackURL";
             $this->update_Cart_by_Status($WCOrderId, $status, $_POST['tranID'], $referer, $_POST['channel']);
             $this->acknowledgeResponse($_POST);
@@ -1320,7 +1377,14 @@ function wcmolpay_gateway_load() {
         public function update_Cart_by_Status($orderid, $MOLPay_status, $tranID, $referer, $channel) {
             global $woocommerce;
 
-            $order = new WC_Order( $orderid );
+            $order = wc_get_order( $orderid );
+            if (!$order) {
+                $this->logger->error(
+                    sprintf('update_Cart_by_Status: Order #%s could not be loaded.%s', $orderid, $referer),
+                    $this->log_context
+                );
+                return;
+            }
 
             switch ($MOLPay_status) {
                 case '00':
@@ -1456,8 +1520,30 @@ function wcmolpay_gateway_load() {
 
 
         /**
+         * Log a callback whose orderid did not resolve to a WooCommerce order, without
+         * recording secret/verify keys, so support can investigate the missing mapping.
+         *
+         * @param array  $response Raw POST payload from Fiuu.
+         * @param string $context  Handler that received the callback (ReturnURL, NotificationURL, CallbackURL).
+         */
+        private function log_unresolved_order($response, $context) {
+            $this->logger->error(
+                sprintf(
+                    '%s: no WooCommerce order found for orderid "%s" (tranID: %s, channel: %s, status: %s, domain: %s)',
+                    $context,
+                    isset($response['orderid']) ? $response['orderid'] : '',
+                    isset($response['tranID']) ? $response['tranID'] : '',
+                    isset($response['channel']) ? $response['channel'] : '',
+                    isset($response['status']) ? $response['status'] : '',
+                    isset($response['domain']) ? $response['domain'] : ''
+                ),
+                $this->log_context
+            );
+        }
+
+        /**
          * Acknowledge transaction result
-         * 
+         *
          * @global mixed $woocommerce
          * @param array $response
          */

@@ -400,14 +400,13 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
             }
         }
         $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
+        $order = $WCOrderId ? wc_get_order($WCOrderId) : false;
 
-        if (empty($WCOrderId)) {
-            $error_message = "Order not found";
-            $this->logger->error($error_message, $this->log_context);
-            wp_die($error_message);
+        if (!$order) {
+            $this->log_unresolved_order($_POST, 'ReturnURL');
+            wp_die('Order not found', 'Fiuu Payment Error', array('response' => 400));
         }
 
-        $order = new WC_Order($WCOrderId);
         $referer = "<br>Referer: ReturnURL";
         $getStatus =  $order->get_status();
         if (!in_array($getStatus, array('processing', 'completed'))) {
@@ -467,11 +466,10 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
         $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
 
         if (empty($WCOrderId)) {
-            $error_message = sprintf('Notification: Order not found for Fiuu orderid "%s"', $_POST['orderid']);
-            $this->logger->error($error_message, $this->log_context);
-            // Do not acknowledge: leaving this RMN un-acknowledged lets Fiuu retry it later
-            // (e.g. if the order wasn't persisted yet), instead of falsely confirming completion.
-            status_header(200);
+            $this->log_unresolved_order($_POST, 'NotificationURL');
+            // Respond with a controlled error and skip the acknowledgment (CBTOKEN / relay),
+            // so Fiuu can retry later instead of the gateway falsely confirming completion.
+            status_header(400);
             exit;
         }
 
@@ -519,11 +517,10 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
         $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
 
         if (empty($WCOrderId)) {
-            $error_message = sprintf('Callback: Order not found for Fiuu orderid "%s"', $_POST['orderid']);
-            $this->logger->error($error_message, $this->log_context);
-            // Do not acknowledge: leaving this RMN un-acknowledged lets Fiuu retry it later
-            // (e.g. if the order wasn't persisted yet), instead of falsely confirming completion.
-            status_header(200);
+            $this->log_unresolved_order($_POST, 'CallbackURL');
+            // Respond with a controlled error and skip the acknowledgment (CBTOKEN / relay),
+            // so Fiuu can retry later instead of the gateway falsely confirming completion.
+            status_header(400);
             exit;
         }
 
@@ -847,10 +844,10 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
 
     /**
      * Obtain the original order id based using the returned transaction order id
-     * 
+     *
      * @global mixed $woocommerce
      * @param int $orderid
-     * @return int $real_order_id
+     * @return int|false WooCommerce order ID, or false if it could not be resolved to a loadable order.
      */
     public function get_WCOrderIdByOrderId($orderid)
     {
@@ -874,11 +871,9 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
         }
 
         // Use wc_get_order() (HPOS-safe) to confirm the resolved ID maps to a real, loadable order.
+        // Logging is left to the caller (log_unresolved_order()), which has the fuller request
+        // context (tranID/channel/status/domain) and which handler is involved.
         if (empty($WCOrderId) || !wc_get_order($WCOrderId)) {
-            $this->logger->error(
-                sprintf('Unable to resolve WooCommerce order for Fiuu orderid "%s" (ordering_plugin=%s).', $orderid, $this->ordering_plugin),
-                $this->log_context
-            );
             return false;
         }
 
@@ -886,8 +881,31 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
     }
 
     /**
+     * Log a callback whose orderid did not resolve to a WooCommerce order, without
+     * recording secret/verify keys, so support can investigate the missing mapping.
+     *
+     * @param array  $response Raw POST payload from Fiuu.
+     * @param string $context  Handler that received the callback (ReturnURL, NotificationURL, CallbackURL).
+     */
+    private function log_unresolved_order($response, $context)
+    {
+        $this->logger->error(
+            sprintf(
+                '%s: no WooCommerce order found for orderid "%s" (tranID: %s, channel: %s, status: %s, domain: %s)',
+                $context,
+                isset($response['orderid']) ? $response['orderid'] : '',
+                isset($response['tranID']) ? $response['tranID'] : '',
+                isset($response['channel']) ? $response['channel'] : '',
+                isset($response['status']) ? $response['status'] : '',
+                isset($response['domain']) ? $response['domain'] : ''
+            ),
+            $this->log_context
+        );
+    }
+
+    /**
      * Acknowledge transaction result
-     * 
+     *
      * @global mixed $woocommerce
      * @param array $response
      */

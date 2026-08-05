@@ -1,19 +1,19 @@
 <?php
 /**
- * Razer Merchant Services WooCommerce Shopping Cart Plugin
- * 
- * @author Razer Merchant Services Technical Team <technical-sa@razer.com>
+ * Fiuu WooCommerce Shopping Cart Plugin
+ *
+ * @author Fiuu Technical Team <technical@fiuu.com>
  * @version 3.0.0
  * @example For callback : http://shoppingcarturl/?wc-api=WC_Molpay_Gateway
  * @example For notification : http://shoppingcarturl/?wc-api=WC_Molpay_Gateway
  */
 
 /**
- * Plugin Name: WooCommerce Razer Merchant Services Seamless for Sequential Order Numbers Pro
- * Plugin URI: https://github.com/RazerMS/WordPress_WooCommerce_WP-eCommerce_ClassiPress
- * Description: WooCommerce Razer Merchant Services | The leading payment gateway in South East Asia Grow your business with Razer Merchant Services payment solutions & free features: Physical Payment at 7-Eleven, Seamless Checkout, Tokenization, Loyalty Program and more for WooCommerce
- * Author: Razer Merchant Services Tech Team
- * Author URI: https://merchant.razer.com/
+ * Plugin Name: WooCommerce Fiuu Seamless for Sequential Order Numbers Pro
+ * Plugin URI: https://github.com/FiuuPayment/Shopping-Cart-Plugins-Fiuu_WooCommerce
+ * Description: WooCommerce Fiuu | The leading payment gateway in South East Asia Grow your business with Fiuu Services payment solutions & free features: Physical Payment at 7-Eleven, Seamless Checkout, Tokenization, Loyalty Program and more for WooCommerce
+ * Author: Fiuu Services Tech Team
+ * Author URI: https://fiuu.com
  * Version: 3.0.1
  * License: MIT
  * Text Domain: wcmolpay
@@ -103,8 +103,8 @@ function wcmolpay_gateway_load() {
             $this->account_type = $this->settings['account_type'];
 
             // Define channel setting variables
-            $this->url = ($this->get_option('account_type')=='1') ? "https://www.onlinepayment.com.my/" : "https://sandbox.merchant.razer.com/" ;
-            $this->inquiry_url = ($this->get_option('account_type')=='1') ? "https://api.merchant.razer.com/" : "https://sandbox.merchant.razer.com/" ;
+            $this->url = ($this->get_option('account_type')=='1') ? "https://pay.fiuu.com/" : "https://sandbox-payment.fiuu.com/" ;
+            $this->inquiry_url = ($this->get_option('account_type')=='1') ? "https://api.fiuu.com/" : "https://sandbox-payment.fiuu.com/" ;
 
             // Define channel setting variables
             $this->credit = ($this->get_option('credit')=='yes' ? true : false);
@@ -231,19 +231,19 @@ function wcmolpay_gateway_load() {
                 'merchant_id' => array(
                     'title' => __( 'Merchant ID', 'wcmolpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your Razer Merchant Services Merchant ID.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sRazer Merchant Services Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your Razer Merchant Services Merchant ID.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sRazer Merchant Services Account%s.', 'wcmolpay' ), '<a href="https://portal.fiuu.com/" target="_blank">', '</a>' ),
                     'default' => ''
                 ),
                 'verify_key' => array(
                     'title' => __( 'Verify Key', 'wcmolpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your Razer Merchant Services Verify Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sRazer Merchant Services Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your Razer Merchant Services Verify Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sRazer Merchant Services Account%s.', 'wcmolpay' ), '<a href="https://portal.fiuu.com/" target="_blank">', '</a>' ),
                     'default' => ''
                 ),
                 'secret_key' => array(
                     'title' => __( 'Secret Key', 'wcmolpay' ),
                     'type' => 'text',
-                    'description' => __( 'Please enter your Razer Merchant Services Secret Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sRazer Merchant Services Account%s.', 'wcmolpay' ), '<a href="https://portal.merchant.razer.com/" target="_blank">', '</a>' ),
+                    'description' => __( 'Please enter your Razer Merchant Services Secret Key.', 'wcmolpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sRazer Merchant Services Account%s.', 'wcmolpay' ), '<a href="https://portal.fiuu.com/" target="_blank">', '</a>' ),
                     'default' => ''
                 ),
                 'account_type' => array(
@@ -641,21 +641,27 @@ function wcmolpay_gateway_load() {
          */
         function check_molpay_response_returnurl() {
             global $woocommerce;
-            
+
             $_POST['treq']= '1'; // Additional parameter for IPN
 
             $amount = $_POST['amount'];
             $orderid = $_POST['orderid'];
-            $appcode = $_POST['appcode'];
             $tranID = $_POST['tranID'];
             $domain = $_POST['domain'];
             $status = $_POST['status'];
-            $currency = $_POST['currency'];
-            $paydate = $_POST['paydate'];
-            $channel = $_POST['channel'];
-            $skey = $_POST['skey'];
-            $vkey = $this->secret_key;
-            
+
+            $verifyresult = $this->verifySkey($_POST);
+            if( !$verifyresult )
+                $status = "-1";
+
+            $post_id = wc_seq_order_number_pro()->find_order_by_order_number( $orderid );
+            $order = $post_id ? wc_get_order($post_id) : false;
+
+            if (!$order) {
+                $this->log_unresolved_order($_POST, 'ReturnURL');
+                wp_die('Order not found', 'Fiuu Payment Error', array('response' => 400));
+            }
+
             foreach($_POST as $k => $v) {
                 $postData[]= $k."=".$v;
             }
@@ -672,19 +678,10 @@ function wcmolpay_gateway_load() {
             curl_setopt($ch, CURLOPT_SSLVERSION , CURL_SSLVERSION_TLSv1 );
             $result = curl_exec( $ch );
             curl_close( $ch );
-            
-            $key0 = md5($tranID.$orderid.$status.$domain.$amount.$currency);
-            $key1 = md5($paydate.$domain.$key0.$appcode.$vkey);
 
-            // invalid transaction
-            if( $skey != $key1 )
-                $status = -1;
-
-            $post_id = wc_seq_order_number_pro()->find_order_by_order_number( $orderid );
-            $order = new WC_Order( $post_id );
             $referer = "<br>Referer: ReturnURL";
             $getStatus =  $order->get_status();
-        
+
             if($getStatus != 'success') {
                 if ($status == "11") {
                     $referer .= " (Inquiry)";
@@ -709,21 +706,27 @@ function wcmolpay_gateway_load() {
          */
         function check_molpay_response_notification() {
             global $woocommerce;
-            
+
             $_POST['treq']= '1'; // Additional parameter for IPN
-                        
-            $nbcb = $_POST['nbcb'];
-            $amount = $_POST['amount'];
+
             $orderid = $_POST['orderid'];
             $tranID = $_POST['tranID'];
             $status = $_POST['status'];
-            $domain = $_POST['domain']; 
-            $currency = $_POST['currency'];
-            $appcode = $_POST['appcode'];
-            $paydate = $_POST['paydate'];
-            $skey = $_POST['skey'];
-            $vkey = $this->secret_key;
-            
+
+            $verifyresult = $this->verifySkey($_POST);
+            if( !$verifyresult )
+                $status = "-1";
+
+            $post_id = wc_seq_order_number_pro()->find_order_by_order_number( $orderid );
+
+            if (empty($post_id) || !wc_get_order($post_id)) {
+                $this->log_unresolved_order($_POST, 'NotificationURL');
+                // Respond with a controlled error and skip the acknowledgment (CBTOKEN / relay),
+                // so Fiuu can retry later instead of the gateway falsely confirming completion.
+                status_header(400);
+                exit;
+            }
+
             foreach($_POST as $k=> $v) {
                 $postData[]= $k."=".$v;
             }
@@ -740,14 +743,7 @@ function wcmolpay_gateway_load() {
             curl_setopt($ch, CURLOPT_SSLVERSION , CURL_SSLVERSION_TLSv1 );
             $result = curl_exec( $ch );
             curl_close( $ch );
-            
-            $key0 = md5($tranID.$orderid.$status.$domain.$amount.$currency);
-            $key1 = md5($paydate.$domain.$key0.$appcode.$vkey);
 
-            if ($skey != $key1)
-                $status = "-1";
-            
-            $post_id = wc_seq_order_number_pro()->find_order_by_order_number( $orderid );
             $referer = "<br>Referer: NotificationURL";
             $this->update_Cart_by_Status($post_id, $status, $tranID, $referer);
         }
@@ -761,27 +757,27 @@ function wcmolpay_gateway_load() {
             global $woocommerce;
                         
             $nbcb = $_POST['nbcb'];
-            $amount = $_POST['amount'];
             $orderid = $_POST['orderid'];
             $tranID = $_POST['tranID'];
             $status = $_POST['status'];
-            $domain = $_POST['domain']; 
-            $currency = $_POST['currency'];
-            $appcode = $_POST['appcode'];
-            $paydate = $_POST['paydate'];
-            $skey = $_POST['skey'];
-            $vkey = $this->secret_key;
 
-            $key0 = md5($tranID.$orderid.$status.$domain.$amount.$currency);
-            $key1 = md5($paydate.$domain.$key0.$appcode.$vkey);
-
-            if ($skey != $key1)
+            $verifyresult = $this->verifySkey($_POST);
+            if( !$verifyresult )
                 $status = "-1";
             
             $post_id = wc_seq_order_number_pro()->find_order_by_order_number( $orderid );
+
+            if (empty($post_id) || !wc_get_order($post_id)) {
+                $this->log_unresolved_order($_POST, 'CallbackURL');
+                // Respond with a controlled error and skip the acknowledgment (CBTOKEN / relay),
+                // so Fiuu can retry later instead of the gateway falsely confirming completion.
+                status_header(400);
+                exit;
+            }
+
             $referer = "<br>Referer: CallbackURL";
             $this->update_Cart_by_Status($post_id, $status, $tranID, $referer);
-            
+
             if ( $nbcb=='1' ) {
                 //callback IPN feedback to notified Razer Merchant Services
                 echo "CBTOKEN:MPSTATOK"; exit;
@@ -875,8 +871,30 @@ function wcmolpay_gateway_load() {
         }
 
         /**
+         * Log a callback whose orderid did not resolve to a WooCommerce order, without
+         * recording secret/verify keys, so support can investigate the missing mapping.
+         *
+         * @param array  $response Raw POST payload from Fiuu.
+         * @param string $context  Handler that received the callback (ReturnURL, NotificationURL, CallbackURL).
+         */
+        private function log_unresolved_order($response, $context) {
+            $this->logger->error(
+                sprintf(
+                    '%s: no WooCommerce order found for orderid "%s" (tranID: %s, channel: %s, status: %s, domain: %s)',
+                    $context,
+                    isset($response['orderid']) ? $response['orderid'] : '',
+                    isset($response['tranID']) ? $response['tranID'] : '',
+                    isset($response['channel']) ? $response['channel'] : '',
+                    isset($response['status']) ? $response['status'] : '',
+                    isset($response['domain']) ? $response['domain'] : ''
+                ),
+                $this->log_context
+            );
+        }
+
+        /**
          * Update Cart based on Razer Merchant Services status
-         * 
+         *
          * @global mixed $woocommerce
          * @param int $order_id
          * @param int $MOLPay_status
@@ -886,7 +904,15 @@ function wcmolpay_gateway_load() {
         public function update_Cart_by_Status($orderid, $MOLPay_status, $tranID, $referer) {
             global $woocommerce;
 
-            $order = new WC_Order( $orderid );
+            $order = wc_get_order( $orderid );
+            if (!$order) {
+                $this->logger->error(
+                    sprintf('update_Cart_by_Status: Order #%s could not be loaded.%s', $orderid, $referer),
+                    $this->log_context
+                );
+                return;
+            }
+
             switch ($MOLPay_status) {
                 case '00':
                     $M_status = 'SUCCESSFUL';
@@ -911,6 +937,20 @@ function wcmolpay_gateway_load() {
             } else {
                 $order->update_status($W_status, sprintf(__('Payment %s via Razer Merchant Services.', 'woocommerce'), $tranID ) );
             }
+        }
+
+        /**
+         * To verify transaction result using merchant secret key setting.
+         *
+         * @param  array $response
+         * @return boolean verifyresult
+         */
+        public function verifySkey($response) {
+
+            $key0 = md5($response['tranID'].$response['orderid'].$response['status'].$response['domain'].$response['amount'].$response['currency']);
+            $key1 = md5($response['paydate'].$response['domain'].$key0.$response['appcode'].$this->secret_key);
+
+            return hash_equals($key1, $response['skey']);
         }
 
     }
