@@ -1,18 +1,18 @@
 <?php
 /**
- * Razer Merchant Services WooCommerce Shopping Cart Plugin
- * 
- * @author Razer Merchant Services Technical Team <technical@fiuu.com>
+ * Fiuu WooCommerce Shopping Cart Plugin
+ *
+ * @author Fiuu Technical Team <technical@fiuu.com>
  * @version 3.0.0
  * @example For callback : http://shoppingcarturl/?wc-api=WC_Molpay_Gateway
  * @example For notification : http://shoppingcarturl/?wc-api=WC_Molpay_Gateway
  */
 
 /**
- * Plugin Name: WooCommerce Razer Merchant Services Seamless for Sequential Order Numbers 
- * Plugin URI: https://github.com/FiuuPayment/Shopping-Cart-Plugins-Fiuu_OpenCart_3.0
- * Description: WooCommerce Razer Merchant Services | The leading payment gateway in South East Asia Grow your business with Razer Merchant Services payment solutions & free features: Physical Payment at 7-Eleven, Seamless Checkout, Tokenization, Loyalty Program and more for WooCommerce
- * Author: Razer Merchant Services Tech Team
+ * Plugin Name: WooCommerce Fiuu Seamless for Sequential Order Numbers
+ * Plugin URI: https://github.com/FiuuPayment/Shopping-Cart-Plugins-Fiuu_WooCommerce
+ * Description: WooCommerce Fiuu | The leading payment gateway in South East Asia Grow your business with Fiuu Services payment solutions & free features: Physical Payment at 7-Eleven, Seamless Checkout, Tokenization, Loyalty Program and more for WooCommerce
+ * Author: Fiuu Services Tech Team
  * Author URI: https://fiuu.com
  * Version: 3.0.1
  * License: MIT
