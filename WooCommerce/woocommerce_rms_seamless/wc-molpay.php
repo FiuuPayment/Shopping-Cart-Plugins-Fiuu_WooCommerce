@@ -1191,11 +1191,12 @@ function wcmolpay_gateway_load() {
          */
         function check_molpay_response_returnurl() {
             global $woocommerce;
-            
-            $verifyresult = $this->verifySkey($_POST);
+
+            if (!$this->verifySkey($_POST)) {
+                $this->log_invalid_signature($_POST, 'ReturnURL');
+                wp_die('Invalid payment signature', 'Fiuu Payment Error', array('response' => 400));
+            }
             $status = $_POST['status'];
-            if( !$verifyresult )
-                $status = "-1";
 
             $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
             $order = $WCOrderId ? wc_get_order($WCOrderId) : false;
@@ -1203,6 +1204,10 @@ function wcmolpay_gateway_load() {
             if (!$order) {
                 $this->log_unresolved_order($_POST, 'ReturnURL');
                 wp_die('Order not found', 'Fiuu Payment Error', array('response' => 400));
+            }
+
+            if (!$this->validate_callback_amount_currency($order, $_POST, 'ReturnURL')) {
+                wp_die('Invalid payment amount or currency', 'Fiuu Payment Error', array('response' => 400));
             }
 
             $referer = "<br>Referer: ReturnURL";
@@ -1232,10 +1237,13 @@ function wcmolpay_gateway_load() {
          */
         function check_molpay_response_notification() {
             global $woocommerce;
-            $verifyresult = $this->verifySkey($_POST);
+
+            if (!$this->verifySkey($_POST)) {
+                $this->log_invalid_signature($_POST, 'NotificationURL');
+                status_header(400);
+                exit;
+            }
             $status = $_POST['status'];
-            if ( !$verifyresult )
-                $status = "-1";
 
             $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
 
@@ -1243,6 +1251,12 @@ function wcmolpay_gateway_load() {
                 $this->log_unresolved_order($_POST, 'NotificationURL');
                 // Respond with a controlled error and skip the acknowledgment (CBTOKEN / relay),
                 // so Fiuu can retry later instead of the gateway falsely confirming completion.
+                status_header(400);
+                exit;
+            }
+
+            $order = wc_get_order($WCOrderId);
+            if (!$this->validate_callback_amount_currency($order, $_POST, 'NotificationURL')) {
                 status_header(400);
                 exit;
             }
@@ -1259,17 +1273,26 @@ function wcmolpay_gateway_load() {
          */
         function check_molpay_response_callback() {
             global $woocommerce;
-            $verifyresult = $this->verifySkey($_POST);
+
+            if (!$this->verifySkey($_POST)) {
+                $this->log_invalid_signature($_POST, 'CallbackURL');
+                status_header(400);
+                exit;
+            }
             $status = $_POST['status'];
-            if ( !$verifyresult )
-                $status = "-1";
-            
+
             $WCOrderId = $this->get_WCOrderIdByOrderId($_POST['orderid']);
 
             if (empty($WCOrderId) || !wc_get_order($WCOrderId)) {
                 $this->log_unresolved_order($_POST, 'CallbackURL');
                 // Respond with a controlled error and skip the acknowledgment (CBTOKEN / relay),
                 // so Fiuu can retry later instead of the gateway falsely confirming completion.
+                status_header(400);
+                exit;
+            }
+
+            $order = wc_get_order($WCOrderId);
+            if (!$this->validate_callback_amount_currency($order, $_POST, 'CallbackURL')) {
                 status_header(400);
                 exit;
             }
@@ -1539,6 +1562,68 @@ function wcmolpay_gateway_load() {
                 ),
                 $this->log_context
             );
+        }
+
+        /**
+         * Log a callback whose skey failed verification, without recording secret/verify
+         * keys, so support can investigate potential tampering or misconfiguration.
+         *
+         * @param array  $response Raw POST payload from Fiuu.
+         * @param string $context  Handler that received the callback (ReturnURL, NotificationURL, CallbackURL).
+         */
+        private function log_invalid_signature($response, $context) {
+            $this->logger->error(
+                sprintf(
+                    '%s: signature verification failed for orderid "%s" (tranID: %s, channel: %s, status: %s, domain: %s)',
+                    $context,
+                    isset($response['orderid']) ? $response['orderid'] : '',
+                    isset($response['tranID']) ? $response['tranID'] : '',
+                    isset($response['channel']) ? $response['channel'] : '',
+                    isset($response['status']) ? $response['status'] : '',
+                    isset($response['domain']) ? $response['domain'] : ''
+                ),
+                $this->log_context
+            );
+        }
+
+        /**
+         * Confirm the callback's amount and currency match the resolved WooCommerce order
+         * before any order status or payment mutation is allowed to proceed.
+         *
+         * @param WC_Order $order    Resolved WooCommerce order.
+         * @param array    $response Raw POST payload from Fiuu.
+         * @param string   $context  Handler that received the callback (ReturnURL, NotificationURL, CallbackURL).
+         * @return bool True when amount and currency match, false otherwise.
+         */
+        private function validate_callback_amount_currency($order, $response, $context) {
+            $order_amount = wc_format_decimal($order->get_total(), 2);
+            $callback_amount = wc_format_decimal(isset($response['amount']) ? $response['amount'] : '', 2);
+            $order_currency = strtoupper($order->get_currency());
+            $callback_currency = strtoupper(isset($response['currency']) ? $response['currency'] : '');
+
+            if ($order_amount !== $callback_amount || $order_currency !== $callback_currency) {
+                $order->add_order_note(sprintf(
+                    'Fiuu %s rejected: amount/currency mismatch (order expects %s %s).',
+                    $context,
+                    $order_amount,
+                    $order_currency
+                ));
+                $this->logger->error(
+                    sprintf(
+                        '%s: amount/currency mismatch for order #%s (order: %s %s, callback: %s %s).',
+                        $context,
+                        $order->get_id(),
+                        $order_amount,
+                        $order_currency,
+                        $callback_amount,
+                        $callback_currency
+                    ),
+                    $this->log_context
+                );
+                return false;
+            }
+
+            return true;
         }
 
         /**
