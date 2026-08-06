@@ -642,6 +642,11 @@ function wcmolpay_gateway_load() {
         function check_molpay_response_returnurl() {
             global $woocommerce;
 
+            if (!$this->verifySkey($_POST)) {
+                $this->log_invalid_signature($_POST, 'ReturnURL');
+                wp_die('Invalid payment signature', 'Fiuu Payment Error', array('response' => 400));
+            }
+
             $_POST['treq']= '1'; // Additional parameter for IPN
 
             $amount = $_POST['amount'];
@@ -650,16 +655,16 @@ function wcmolpay_gateway_load() {
             $domain = $_POST['domain'];
             $status = $_POST['status'];
 
-            $verifyresult = $this->verifySkey($_POST);
-            if( !$verifyresult )
-                $status = "-1";
-
             $post_id = wc_seq_order_number_pro()->find_order_by_order_number( $orderid );
             $order = $post_id ? wc_get_order($post_id) : false;
 
             if (!$order) {
                 $this->log_unresolved_order($_POST, 'ReturnURL');
                 wp_die('Order not found', 'Fiuu Payment Error', array('response' => 400));
+            }
+
+            if (!$this->validate_callback_amount_currency($order, $_POST, 'ReturnURL')) {
+                wp_die('Invalid payment amount or currency', 'Fiuu Payment Error', array('response' => 400));
             }
 
             foreach($_POST as $k => $v) {
@@ -707,15 +712,17 @@ function wcmolpay_gateway_load() {
         function check_molpay_response_notification() {
             global $woocommerce;
 
+            if (!$this->verifySkey($_POST)) {
+                $this->log_invalid_signature($_POST, 'NotificationURL');
+                status_header(400);
+                exit;
+            }
+
             $_POST['treq']= '1'; // Additional parameter for IPN
 
             $orderid = $_POST['orderid'];
             $tranID = $_POST['tranID'];
             $status = $_POST['status'];
-
-            $verifyresult = $this->verifySkey($_POST);
-            if( !$verifyresult )
-                $status = "-1";
 
             $post_id = wc_seq_order_number_pro()->find_order_by_order_number( $orderid );
 
@@ -723,6 +730,12 @@ function wcmolpay_gateway_load() {
                 $this->log_unresolved_order($_POST, 'NotificationURL');
                 // Respond with a controlled error and skip the acknowledgment (CBTOKEN / relay),
                 // so Fiuu can retry later instead of the gateway falsely confirming completion.
+                status_header(400);
+                exit;
+            }
+
+            $order = wc_get_order($post_id);
+            if (!$this->validate_callback_amount_currency($order, $_POST, 'NotificationURL')) {
                 status_header(400);
                 exit;
             }
@@ -755,22 +768,30 @@ function wcmolpay_gateway_load() {
          */
         function check_molpay_response_callback() {
             global $woocommerce;
-                        
+
+            if (!$this->verifySkey($_POST)) {
+                $this->log_invalid_signature($_POST, 'CallbackURL');
+                status_header(400);
+                exit;
+            }
+
             $nbcb = $_POST['nbcb'];
             $orderid = $_POST['orderid'];
             $tranID = $_POST['tranID'];
             $status = $_POST['status'];
 
-            $verifyresult = $this->verifySkey($_POST);
-            if( !$verifyresult )
-                $status = "-1";
-            
             $post_id = wc_seq_order_number_pro()->find_order_by_order_number( $orderid );
 
             if (empty($post_id) || !wc_get_order($post_id)) {
                 $this->log_unresolved_order($_POST, 'CallbackURL');
                 // Respond with a controlled error and skip the acknowledgment (CBTOKEN / relay),
                 // so Fiuu can retry later instead of the gateway falsely confirming completion.
+                status_header(400);
+                exit;
+            }
+
+            $order = wc_get_order($post_id);
+            if (!$this->validate_callback_amount_currency($order, $_POST, 'CallbackURL')) {
                 status_header(400);
                 exit;
             }
@@ -890,6 +911,88 @@ function wcmolpay_gateway_load() {
                 ),
                 $this->log_context
             );
+        }
+
+        /**
+         * Log a callback whose skey failed verification, without recording secret/verify
+         * keys, so support can investigate potential tampering or misconfiguration.
+         *
+         * @param array  $response Raw POST payload from Fiuu.
+         * @param string $context  Handler that received the callback (ReturnURL, NotificationURL, CallbackURL).
+         */
+        private function log_invalid_signature($response, $context) {
+            $this->logger->error(
+                sprintf(
+                    '%s: signature verification failed for orderid "%s" (tranID: %s, channel: %s, status: %s, domain: %s)',
+                    $context,
+                    isset($response['orderid']) ? $response['orderid'] : '',
+                    isset($response['tranID']) ? $response['tranID'] : '',
+                    isset($response['channel']) ? $response['channel'] : '',
+                    isset($response['status']) ? $response['status'] : '',
+                    isset($response['domain']) ? $response['domain'] : ''
+                ),
+                $this->log_context
+            );
+        }
+
+        /**
+         * Confirm the callback's amount and currency match the resolved WooCommerce order
+         * before any order status or payment mutation is allowed to proceed.
+         *
+         * @param WC_Order $order    Resolved WooCommerce order.
+         * @param array    $response Raw POST payload from Fiuu.
+         * @param string   $context  Handler that received the callback (ReturnURL, NotificationURL, CallbackURL).
+         * @return bool True when amount and currency match, false otherwise.
+         */
+        private function validate_callback_amount_currency($order, $response, $context) {
+            // Non-scalar amount/currency (e.g. amount[]=1&amount[]=2) would otherwise fatal
+            // in wc_format_decimal()/strtoupper() below; treat it as a mismatch instead.
+            $response_amount = isset($response['amount']) && is_scalar($response['amount']) ? $response['amount'] : '';
+            $response_currency = isset($response['currency']) && is_scalar($response['currency']) ? $response['currency'] : '';
+
+            $order_amount = wc_format_decimal($order->get_total(), 2);
+            $callback_amount = wc_format_decimal($response_amount, 2);
+            $order_currency = strtoupper($order->get_currency());
+            $callback_currency = strtoupper($response_currency);
+
+            $mismatched_fields = array();
+            if ($order_amount !== $callback_amount) {
+                $mismatched_fields[] = 'amount';
+            }
+            if ($order_currency !== $callback_currency) {
+                $mismatched_fields[] = 'currency';
+            }
+
+            if (!empty($mismatched_fields)) {
+                $reason = implode(' and ', $mismatched_fields) . ' mismatch';
+                // Internal-only detail (order note + log): the response returned to the caller
+                // stays generic so a tampered request can't learn which field it got wrong.
+                $order->add_order_note(sprintf(
+                    'Fiuu %s rejected: %s (order expects %s %s, callback sent %s %s).',
+                    $context,
+                    $reason,
+                    $order_amount,
+                    $order_currency,
+                    $callback_amount,
+                    $callback_currency
+                ));
+                $this->logger->error(
+                    sprintf(
+                        '%s: %s for order #%s (order: %s %s, callback: %s %s).',
+                        $context,
+                        $reason,
+                        $order->get_id(),
+                        $order_amount,
+                        $order_currency,
+                        $callback_amount,
+                        $callback_currency
+                    ),
+                    $this->log_context
+                );
+                return false;
+            }
+
+            return true;
         }
 
         /**
