@@ -965,17 +965,32 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
         $order_currency = strtoupper($order->get_currency());
         $callback_currency = strtoupper(isset($response['currency']) ? $response['currency'] : '');
 
-        if ($order_amount !== $callback_amount || $order_currency !== $callback_currency) {
+        $mismatched_fields = array();
+        if ($order_amount !== $callback_amount) {
+            $mismatched_fields[] = 'amount';
+        }
+        if ($order_currency !== $callback_currency) {
+            $mismatched_fields[] = 'currency';
+        }
+
+        if (!empty($mismatched_fields)) {
+            $reason = implode(' and ', $mismatched_fields) . ' mismatch';
+            // Internal-only detail (order note + log): the response returned to the caller
+            // stays generic so a tampered request can't learn which field it got wrong.
             $order->add_order_note(sprintf(
-                'Fiuu %s rejected: amount/currency mismatch (order expects %s %s).',
+                'Fiuu %s rejected: %s (order expects %s %s, callback sent %s %s).',
                 $context,
+                $reason,
                 $order_amount,
-                $order_currency
+                $order_currency,
+                $callback_amount,
+                $callback_currency
             ));
             $this->logger->error(
                 sprintf(
-                    '%s: amount/currency mismatch for order #%s (order: %s %s, callback: %s %s).',
+                    '%s: %s for order #%s (order: %s %s, callback: %s %s).',
                     $context,
+                    $reason,
                     $order->get_id(),
                     $order_amount,
                     $order_currency,
