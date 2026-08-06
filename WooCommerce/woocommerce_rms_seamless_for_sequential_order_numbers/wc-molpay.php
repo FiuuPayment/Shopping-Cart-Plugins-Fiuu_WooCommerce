@@ -944,10 +944,15 @@ function wcmolpay_gateway_load() {
          * @return bool True when amount and currency match, false otherwise.
          */
         private function validate_callback_amount_currency($order, $response, $context) {
+            // Non-scalar amount/currency (e.g. amount[]=1&amount[]=2) would otherwise fatal
+            // in wc_format_decimal()/strtoupper() below; treat it as a mismatch instead.
+            $response_amount = isset($response['amount']) && is_scalar($response['amount']) ? $response['amount'] : '';
+            $response_currency = isset($response['currency']) && is_scalar($response['currency']) ? $response['currency'] : '';
+
             $order_amount = wc_format_decimal($order->get_total(), 2);
-            $callback_amount = wc_format_decimal(isset($response['amount']) ? $response['amount'] : '', 2);
+            $callback_amount = wc_format_decimal($response_amount, 2);
             $order_currency = strtoupper($order->get_currency());
-            $callback_currency = strtoupper(isset($response['currency']) ? $response['currency'] : '');
+            $callback_currency = strtoupper($response_currency);
 
             $mismatched_fields = array();
             if ($order_amount !== $callback_amount) {
