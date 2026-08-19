@@ -1,4 +1,4 @@
-[Shopping Cart Plugins] – Fiuu WordPress-WooCommerce-WP eCommerce-ClassiPress
+[Shopping Cart Plugins] – Fiuu WordPress-WooCommerce
 =====================
 
 <img src="https://user-images.githubusercontent.com/38641542/74420753-eacb5600-4e86-11ea-9389-5427e4c6840d.jpg">
@@ -8,7 +8,11 @@ Fiuu Plugin for Wordpress developed by RMS technical team.
 Introduction
 -----
 
-This is Fiuu Woocommerce Plugin for Wordpress and ClassicPress Plugin for eCommerce. WooCommerce is an ecommerce plugin for WordPress. It makes creating and managing an online store simple, with reasonable levels of flexibility and several vital features such as inventory and tax management, secure payments and shipping integration
+This is the Fiuu WooCommerce Plugin for WordPress. WooCommerce is an ecommerce plugin for WordPress. It makes creating and managing an online store simple, with reasonable levels of flexibility and several vital features such as inventory and tax management, secure payments and shipping integration
+
+This repository previously also hosted the ClassiPress and WP eCommerce plugins. Those now live in their own repositories:
+- [Shopping-Cart-Plugins-Fiuu_ClassiPress](https://github.com/FiuuPayment/Shopping-Cart-Plugins-Fiuu_ClassiPress)
+- [Shopping-Cart-Plugins-Fiuu_eCommerce](https://github.com/FiuuPayment/Shopping-Cart-Plugins-Fiuu_eCommerce)
 
 Notes / Prerequisite
 -----
@@ -20,8 +24,6 @@ assistance, please email support@fiuu.com.
 
 Installations Guidance for Wordpress Plugin 
 -----------------------------
-[ClassiPress Version 3.2.1](https://github.com/FiuuPayment/Shopping-Cart-Plugins-Fiuu_WooCommerce/wiki/Installation-for-ClassiPress-Plugins)
-
 [WooCommerce](https://github.com/FiuuPayment/Shopping-Cart-Plugins-Fiuu_WooCommerce/wiki/Installation-for-WooCommerce-Plugins)
 
 
