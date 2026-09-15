@@ -953,6 +953,10 @@ function wcmolpay_gateway_load() {
             $callback_amount = wc_format_decimal($response_amount, 2);
             $order_currency = strtoupper($order->get_currency());
             $callback_currency = strtoupper($response_currency);
+            // Fiuu returns Malaysian Ringgit as "RM" even though the payment request sends "MYR".
+            if ($callback_currency === 'RM') {
+                $callback_currency = 'MYR';
+            }
 
             $mismatched_fields = array();
             if ($order_amount !== $callback_amount) {
@@ -1012,6 +1016,11 @@ function wcmolpay_gateway_load() {
                     sprintf('update_Cart_by_Status: Order #%s could not be loaded.%s', $orderid, $referer),
                     $this->log_context
                 );
+                return;
+            }
+
+            // A late or repeated result (e.g. a failed attempt's callback) must not change an order that is already paid.
+            if (in_array($order->get_status(), array('processing', 'completed'))) {
                 return;
             }
 
