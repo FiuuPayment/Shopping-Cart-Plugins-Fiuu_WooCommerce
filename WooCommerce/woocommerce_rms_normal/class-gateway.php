@@ -860,6 +860,10 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
                 }
             }
         } else {
+            // Callbacks often arrive after the return URL has already paid the order; still acknowledge them with CBTOKEN.
+            if (isset($_POST['nbcb']) && $_POST['nbcb'] == '1') {
+                $this->acknowledgeResponse($_POST);
+            }
             echo "Order completed";
             exit;
         }
@@ -969,6 +973,10 @@ class WC_Molpay_Gateway extends WC_Payment_Gateway
         $callback_amount = wc_format_decimal($response_amount, 2);
         $order_currency = strtoupper($order->get_currency());
         $callback_currency = strtoupper($response_currency);
+
+        if ($callback_currency === 'RM') {
+            $callback_currency = 'MYR';
+        }
 
         $mismatched_fields = array();
         if ($order_amount !== $callback_amount) {

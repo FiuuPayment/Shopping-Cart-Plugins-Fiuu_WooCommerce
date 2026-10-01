@@ -1606,6 +1606,10 @@ function wcmolpay_gateway_load() {
             $order_currency = strtoupper($order->get_currency());
             $callback_currency = strtoupper($response_currency);
 
+            if ($callback_currency === 'RM') {
+                $callback_currency = 'MYR';
+            }
+
             $mismatched_fields = array();
             if ($order_amount !== $callback_amount) {
                 $mismatched_fields[] = 'amount';
