@@ -3,7 +3,7 @@
  * Fiuu WooCommerce Shopping Cart Plugin
  *
  * @author Fiuu Technical Team <technical@fiuu.com>
- * @version 3.0.0
+ * @version 3.1.0
  * @example For callback : http://shoppingcarturl/?wc-api=WC_Molpay_Gateway
  * @example For notification : http://shoppingcarturl/?wc-api=WC_Molpay_Gateway
  */
