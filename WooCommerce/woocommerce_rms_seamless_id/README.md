@@ -7,14 +7,14 @@
 
 **Updates:**
 
-- Validate the callback signature, order, amount and currency before updating an order. Invalid requests are rejected with HTTP 400.
-- Use the sandbox URL for the test environment.
+- Improvement on callback validation.
+- Update sandbox URL.
 
 **Bug Fix:**
 
-- Accept `RM` as `MYR` in the callback amount/currency check.
-- Reject notifications and callbacks when no WooCommerce order is found, instead of confirming them.
-- Fix `account_type` and `ordering_plugin` default values.
+- Currency handling in callback.
+- Callback handling - check order exists.
+- Default value correction.
 
 ## v5.3.1 - May 4, 2026
 

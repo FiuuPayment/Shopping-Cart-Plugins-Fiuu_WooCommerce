@@ -7,16 +7,15 @@
 
 **Updates:**
 
-- Validate the callback signature, order, amount and currency before updating an order. Invalid requests are rejected with HTTP 400.
-- Compare the callback signature with `hash_equals()`.
-- Rebrand Razer Merchant Services references to Fiuu and use Fiuu endpoints (pay.fiuu.com, api.fiuu.com).
+- Improvement on callback validation.
+- Rebrand to Fiuu.
 
 **Bug Fix:**
 
-- Do not change an order that is already paid when a late or repeated result arrives.
-- Accept `RM` as `MYR` in the callback amount/currency check.
-- Reject notifications and callbacks when no WooCommerce order is found, instead of confirming them.
-- Fix `account_type` default value.
+- Prevent paid order update from late or repeated payment result.
+- Currency handling in callback.
+- Callback handling - check order exists.
+- Default value correction.
 
 ## v3.0.1 - Apr 21, 2020
 

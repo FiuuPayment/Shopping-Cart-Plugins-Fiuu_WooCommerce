@@ -7,18 +7,17 @@
 
 **Updates:**
 
-- Validate the callback signature, order, amount and currency before updating an order. Invalid requests are rejected with HTTP 400.
-- Rebrand Razer Merchant Services references to Fiuu and use Fiuu endpoints (pay.fiuu.com, api.fiuu.com).
-- Add recurring payment support.
-- Add Extended VCode option.
+- Improvement on callback validation.
+- Rebrand to Fiuu.
+- Add support for recurring payment.
+- Addon Extended VCode feature.
 
 **Bug Fix:**
 
-- Reply `CBTOKEN:MPSTATOK` to callbacks that arrive after the order is already paid.
-- Accept `RM` as `MYR` in the callback amount/currency check.
-- Reject notifications and callbacks when no WooCommerce order is found, instead of confirming them.
-- Fix malformed order-number lookup query.
-- Fix `account_type` default value.
+- Callback handling - acknowledge callback for paid order.
+- Currency handling in callback.
+- Callback handling - check order exists.
+- Order number lookup and default value correction.
 
 ## v3.1.0 - May 30, 2024
 

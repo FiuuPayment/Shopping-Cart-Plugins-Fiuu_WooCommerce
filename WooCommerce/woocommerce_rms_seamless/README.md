@@ -7,18 +7,18 @@
 
 **Updates:**
 
-- Validate the callback signature, order, amount and currency before updating an order. Invalid requests are rejected with HTTP 400.
-- Rebrand Razer Merchant Services references to Fiuu and use Fiuu endpoints (pay.fiuu.com, api.fiuu.com).
-- Revamp the payment UI.
-- Add Atome channel and policy links.
+- Improvement on callback validation.
+- Rebrand to Fiuu.
+- Improvement on payment UI.
+- Adding Atome channel and policy links.
 - Remove unsupported channels.
 
 **Bug Fix:**
 
-- Accept `RM` as `MYR` in the callback amount/currency check.
-- Enforce the Terms & Conditions checkbox on seamless checkout.
-- Reject notifications and callbacks when no WooCommerce order is found, instead of confirming them.
-- Fix `account_type` and `ordering_plugin` default values.
+- Currency handling in callback.
+- Terms & Conditions checkbox handling on seamless checkout.
+- Callback handling - check order exists.
+- Default value correction.
 
 ## v5.3.1 - Sep 7, 2021
 
