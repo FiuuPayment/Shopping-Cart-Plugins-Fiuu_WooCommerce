@@ -1,4 +1,23 @@
-# Change log for WooCommerce Razer Merchant Services Normal Plugin
+# Change log for WooCommerce Fiuu Normal Plugin
+
+## v3.3.0 - Oct 12, 2026
+
+- Release version 3.3.0
+- Includes all changes since v3.1.0 (versions 3.2.x were not listed here).
+
+**Updates:**
+
+- Improvement on callback validation.
+- Rebrand to Fiuu.
+- Add support for recurring payment.
+- Addon Extended VCode feature.
+
+**Bug Fix:**
+
+- Callback handling - acknowledge callback for paid order.
+- Currency handling in callback.
+- Callback handling - check order exists.
+- Order number lookup and default value correction.
 
 ## v3.1.0 - May 30, 2024
 

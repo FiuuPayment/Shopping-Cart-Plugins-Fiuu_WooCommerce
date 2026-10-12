@@ -1,4 +1,24 @@
-# Change log for WooCommerce Razer Merchant Services Seamless Plugin
+# Change log for WooCommerce Fiuu Seamless Plugin
+
+## v6.3.0 - Oct 12, 2026
+
+- Release version 6.3.0
+- Includes all changes since v5.3.1 (versions 6.0 to 6.2 were not listed here).
+
+**Updates:**
+
+- Improvement on callback validation.
+- Rebrand to Fiuu.
+- Improvement on payment UI.
+- Adding Atome channel and policy links.
+- Remove unsupported channels.
+
+**Bug Fix:**
+
+- Currency handling in callback.
+- Terms & Conditions checkbox handling on seamless checkout.
+- Callback handling - check order exists.
+- Default value correction.
 
 ## v5.3.1 - Sep 7, 2021
 

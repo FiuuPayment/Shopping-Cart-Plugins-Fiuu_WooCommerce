@@ -1,4 +1,21 @@
-# Change log for WooCommerce Razer Merchant Services Seamless Plugin for Sequential Order Numbers Pro
+# Change log for WooCommerce Fiuu Seamless Plugin for Sequential Order Numbers Pro
+
+## v3.1.0 - Oct 12, 2026
+
+- Release version 3.1.0
+- Includes all changes since v3.0.1.
+
+**Updates:**
+
+- Improvement on callback validation.
+- Rebrand to Fiuu.
+
+**Bug Fix:**
+
+- Prevent paid order update from late or repeated payment result.
+- Currency handling in callback.
+- Callback handling - check order exists.
+- Default value correction.
 
 ## v3.0.1 - Apr 21, 2020
 

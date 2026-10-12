@@ -1,4 +1,20 @@
-# Change log for WooCommerce Razer Merchant Services Seamless Plugin
+# Change log for WooCommerce E2Pay Services Seamless Plugin
+
+## v6.2.0 - Oct 12, 2026
+
+- Release version 6.2.0
+- Includes all changes since the v5.3.1 entry below.
+
+**Updates:**
+
+- Improvement on callback validation.
+- Update sandbox URL.
+
+**Bug Fix:**
+
+- Currency handling in callback.
+- Callback handling - check order exists.
+- Default value correction.
 
 ## v5.3.1 - May 4, 2026
 
