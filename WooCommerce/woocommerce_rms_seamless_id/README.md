@@ -1,6 +1,6 @@
 # Change log for WooCommerce E2Pay Services Seamless Plugin
 
-## v6.2.0 - Oct 6, 2026
+## v6.2.0 - Oct 12, 2026
 
 - Release version 6.2.0
 - Includes all changes since the v5.3.1 entry below.

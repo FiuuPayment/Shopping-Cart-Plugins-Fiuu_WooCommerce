@@ -1,6 +1,6 @@
 # Change log for WooCommerce Fiuu Seamless Plugin for Sequential Order Numbers
 
-## v3.1.0 - Oct 6, 2026
+## v3.1.0 - Oct 12, 2026
 
 - Release version 3.1.0
 - Includes all changes since v3.0.1.

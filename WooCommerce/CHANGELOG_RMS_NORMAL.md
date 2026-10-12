@@ -1,6 +1,6 @@
 # Change log for WooCommerce Fiuu Normal Plugin
 
-## v3.3.0 - Oct 6, 2026
+## v3.3.0 - Oct 12, 2026
 
 - Release version 3.3.0
 - Includes all changes since v3.1.0 (versions 3.2.x were not listed here).

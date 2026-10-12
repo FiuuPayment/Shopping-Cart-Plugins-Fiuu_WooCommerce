@@ -1,6 +1,6 @@
 # Change log for WooCommerce Fiuu Seamless Plugin
 
-## v6.3.0 - Oct 6, 2026
+## v6.3.0 - Oct 12, 2026
 
 - Release version 6.3.0
 - Includes all changes since v5.3.1 (versions 6.0 to 6.2 were not listed here).
