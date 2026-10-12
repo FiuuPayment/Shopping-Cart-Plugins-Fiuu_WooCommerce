@@ -1,4 +1,22 @@
-# Change log for WooCommerce Razer Merchant Services Seamless Plugin for Sequential Order Numbers Pro
+# Change log for WooCommerce Fiuu Seamless Plugin for Sequential Order Numbers Pro
+
+## v3.1.0 - Oct 6, 2026
+
+- Release version 3.1.0
+- Includes all changes since v3.0.1.
+
+**Updates:**
+
+- Validate the callback signature, order, amount and currency before updating an order. Invalid requests are rejected with HTTP 400.
+- Compare the callback signature with `hash_equals()`.
+- Rebrand Razer Merchant Services references to Fiuu and use Fiuu endpoints (pay.fiuu.com, api.fiuu.com).
+
+**Bug Fix:**
+
+- Do not change an order that is already paid when a late or repeated result arrives.
+- Accept `RM` as `MYR` in the callback amount/currency check.
+- Reject notifications and callbacks when no WooCommerce order is found, instead of confirming them.
+- Fix `account_type` default value.
 
 ## v3.0.1 - Apr 21, 2020
 

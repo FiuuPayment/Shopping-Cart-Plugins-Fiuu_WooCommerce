@@ -1,4 +1,24 @@
-# Change log for WooCommerce Razer Merchant Services Seamless Plugin
+# Change log for WooCommerce Fiuu Seamless Plugin
+
+## v6.3.0 - Oct 6, 2026
+
+- Release version 6.3.0
+- Includes all changes since v5.3.1 (versions 6.0 to 6.2 were not listed here).
+
+**Updates:**
+
+- Validate the callback signature, order, amount and currency before updating an order. Invalid requests are rejected with HTTP 400.
+- Rebrand Razer Merchant Services references to Fiuu and use Fiuu endpoints (pay.fiuu.com, api.fiuu.com).
+- Revamp the payment UI.
+- Add Atome channel and policy links.
+- Remove unsupported channels.
+
+**Bug Fix:**
+
+- Accept `RM` as `MYR` in the callback amount/currency check.
+- Enforce the Terms & Conditions checkbox on seamless checkout.
+- Reject notifications and callbacks when no WooCommerce order is found, instead of confirming them.
+- Fix `account_type` and `ordering_plugin` default values.
 
 ## v5.3.1 - Sep 7, 2021
 

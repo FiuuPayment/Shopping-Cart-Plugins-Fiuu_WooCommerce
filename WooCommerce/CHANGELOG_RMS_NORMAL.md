@@ -1,4 +1,24 @@
-# Change log for WooCommerce Razer Merchant Services Normal Plugin
+# Change log for WooCommerce Fiuu Normal Plugin
+
+## v3.3.0 - Oct 6, 2026
+
+- Release version 3.3.0
+- Includes all changes since v3.1.0 (versions 3.2.x were not listed here).
+
+**Updates:**
+
+- Validate the callback signature, order, amount and currency before updating an order. Invalid requests are rejected with HTTP 400.
+- Rebrand Razer Merchant Services references to Fiuu and use Fiuu endpoints (pay.fiuu.com, api.fiuu.com).
+- Add recurring payment support.
+- Add Extended VCode option.
+
+**Bug Fix:**
+
+- Reply `CBTOKEN:MPSTATOK` to callbacks that arrive after the order is already paid.
+- Accept `RM` as `MYR` in the callback amount/currency check.
+- Reject notifications and callbacks when no WooCommerce order is found, instead of confirming them.
+- Fix malformed order-number lookup query.
+- Fix `account_type` default value.
 
 ## v3.1.0 - May 30, 2024
 

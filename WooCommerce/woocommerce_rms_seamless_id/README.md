@@ -1,4 +1,20 @@
-# Change log for WooCommerce Razer Merchant Services Seamless Plugin
+# Change log for WooCommerce E2Pay Services Seamless Plugin
+
+## v6.2.0 - Oct 6, 2026
+
+- Release version 6.2.0
+- Includes all changes since the v5.3.1 entry below.
+
+**Updates:**
+
+- Validate the callback signature, order, amount and currency before updating an order. Invalid requests are rejected with HTTP 400.
+- Use the sandbox URL for the test environment.
+
+**Bug Fix:**
+
+- Accept `RM` as `MYR` in the callback amount/currency check.
+- Reject notifications and callbacks when no WooCommerce order is found, instead of confirming them.
+- Fix `account_type` and `ordering_plugin` default values.
 
 ## v5.3.1 - May 4, 2026
 
